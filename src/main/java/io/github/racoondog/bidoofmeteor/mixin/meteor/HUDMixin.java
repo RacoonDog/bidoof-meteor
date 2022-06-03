@@ -19,7 +19,7 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 @Mixin(value = HUD.class)
-public abstract class TempName {
+public abstract class HUDMixin {
     @Shadow(remap = false)
     @Final
     public List<HudElement> elements;
