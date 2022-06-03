@@ -12,10 +12,13 @@ import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.starscript.Script;
 import meteordevelopment.starscript.compiler.Compiler;
 import meteordevelopment.starscript.compiler.Parser;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 
 import static io.github.racoondog.bidoofmeteor.BidoofMeteor.LOG;
 
+@Environment(EnvType.CLIENT)
 public class Logger extends Module {
     private final SettingGroup sgTeleport = this.settings.createGroup("Teleport");
     private final SettingGroup sgDisconnect = this.settings.createGroup("Disconnect");

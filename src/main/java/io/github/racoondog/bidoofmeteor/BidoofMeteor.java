@@ -1,19 +1,22 @@
 package io.github.racoondog.bidoofmeteor;
 
+import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
 import io.github.racoondog.bidoofmeteor.modules.Logger;
-import io.github.racoondog.bidoofmeteor.modules.hud.BidoofImageHud;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
-import meteordevelopment.meteorclient.systems.hud.HUD;
+import meteordevelopment.meteorclient.systems.commands.Commands;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
+@Environment(EnvType.CLIENT)
 public class BidoofMeteor extends MeteorAddon {
 	public static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BidoofMeteor.class);
 	public static final Category CATEGORY = new Category("Bidoof");
@@ -27,12 +30,7 @@ public class BidoofMeteor extends MeteorAddon {
 
         Modules.get().add(new Logger());
 
-        //HUD.get().elements.add(new CustomImageHud());
-        //HUD.get().elements.add(new BidoofLogoHud());
-        //HUD.get().elements.add(new BidoofImageHud());
-        HUD.get().elements.add(new BidoofImageHud());
-        HUD.get().elements.add(new BidoofImageHud());
-        HUD.get().elements.add(new BidoofImageHud());
+        Commands.get().add(new BidoofCommand());
 	}
 
 	@Override

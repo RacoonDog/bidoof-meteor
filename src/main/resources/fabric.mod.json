@@ -3,12 +3,10 @@
   "id": "bidoof-meteor",
   "version": "${version}",
   "name": "Bidoof Meteor",
-  "description": "An addon template for the Meteor addons.",
-  "authors": [
-    "Crosby"
-  ],
+  "description": "Bidoof.",
+  "authors": [ "Crosby" ],
   "contact": {
-    "repo": "https://github.com/MeteorDevelopment/meteor-addon-template"
+    "repo": "https://github.com/RacoonDog/bidoof-meteor"
   },
   "icon": "assets/bidoof-meteor/icon.png",
   "environment": "client",
@@ -22,7 +20,7 @@
   ],
   "custom": {
     "meteor-client:color": "169,129,70",
-    "meteor-client:commit": "62322409f2291a582924f67cbe82870b2dc0f9f2"
+    "meteor-client:commit": "aa1a4ab676eff9fb0f9f52b039c118dfea329166"
   },
   "depends": {
     "java": ">=17",

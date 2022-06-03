@@ -10,6 +10,6 @@
     "Renderer2DMixin",
     "meteor.ActiveModulesHudMixin",
     "meteor.BetterChatMixin",
-    "meteor.HudMixin"
+    "meteor.HUDMixin"
   ]
 }

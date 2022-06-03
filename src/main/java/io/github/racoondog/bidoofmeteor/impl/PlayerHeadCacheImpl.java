@@ -3,11 +3,14 @@ package io.github.racoondog.bidoofmeteor.impl;
 import io.github.racoondog.bidoofmeteor.mixininterface.IBetterChat;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.BetterChat;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.network.PlayerListEntry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Environment(EnvType.CLIENT)
 public class PlayerHeadCacheImpl {
     public static final LinkedHashMap<String, PlayerListEntry> DYNAMIC_PLAYER_HEAD_CACHE = new LinkedHashMap<>() {
         @Override

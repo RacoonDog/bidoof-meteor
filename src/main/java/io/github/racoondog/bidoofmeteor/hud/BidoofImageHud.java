@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.modules.hud;
+package io.github.racoondog.bidoofmeteor.hud;
 
 import com.google.common.collect.Lists;
 import io.github.racoondog.bidoofmeteor.BidoofImages;
@@ -9,13 +9,18 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.hud.HUD;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.systems.hud.modules.HudElement;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 
 import java.util.List;
 
 import static meteordevelopment.meteorclient.utils.Utils.WHITE;
 
+@Environment(EnvType.CLIENT)
 public class BidoofImageHud extends HudElement {
+    public static int count = 0;
     public static final List<BidoofImageHud> elements = Lists.newArrayList();
 
     private final SettingGroup sgGeneral = this.settings.getDefaultGroup();
@@ -69,7 +74,11 @@ public class BidoofImageHud extends HudElement {
 
     public void updateTexture() {
         if (this.enumSetting.get() instanceof BidoofImages bidoofEnum) {
-            if (bidoofEnum.equals(BidoofImages.Custom)) this.TEXTURE = new Identifier(this.image.get());
+            if (bidoofEnum.equals(BidoofImages.Custom)) {
+                try {
+                    this.TEXTURE = new Identifier(this.image.get());
+                } catch (InvalidIdentifierException e) {}
+            }
             else this.TEXTURE = bidoofEnum.imagePath;
         }
     }

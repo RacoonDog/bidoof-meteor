@@ -3,6 +3,8 @@ package io.github.racoondog.bidoofmeteor;
 import meteordevelopment.meteorclient.addons.AddonManager;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.utils.render.color.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.text.*;
@@ -10,6 +12,7 @@ import net.minecraft.util.Formatting;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
+@Environment(EnvType.CLIENT)
 public class ChatUtils {
     private static Text PREFIX;
 
