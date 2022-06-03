@@ -18,9 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-@Mixin(value = HUD.class, remap = false)
-public abstract class HUDMixin {
-    @Shadow
+@Mixin(value = HUD.class)
+public abstract class TempName {
+    @Shadow(remap = false)
     @Final
     public List<HudElement> elements;
 
