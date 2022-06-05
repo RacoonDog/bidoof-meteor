@@ -1,6 +1,6 @@
 package io.github.racoondog.bidoofmeteor.mixin.meteor;
 
-import io.github.racoondog.bidoofmeteor.BidoofMeteor;
+import io.github.racoondog.bidoofmeteor.impl.AnvilTooltipsImpl;
 import meteordevelopment.meteorclient.events.game.ItemStackTooltipEvent;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.Setting;
@@ -8,13 +8,14 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.render.BetterTooltips;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -41,25 +42,20 @@ public abstract class BetterTooltipsMixin {
     private void inject(ItemStackTooltipEvent event, CallbackInfo ci) {
         if (anvilUses.get()) {
             NbtCompound tag = event.itemStack.getNbt();
-            BidoofMeteor.LOG.info("Is tag null: %s".formatted(tag == null));
-            if (event.itemStack.getItem().isEnchantable(event.itemStack) && tag != null) {
+            if (tag == null) return;
+            boolean bl = event.itemStack.getItem().equals(Items.ENCHANTED_BOOK);
+            if ((event.itemStack.getItem().isEnchantable(event.itemStack) || bl)) {
                 int repairCost = tag.contains("RepairCost") ? tag.getInt("RepairCost") : 0;
-                BidoofMeteor.LOG.info("Repair Cost: %s".formatted(repairCost));
-                int uses = costToUses(repairCost);
-                BidoofMeteor.LOG.info("Anvil Uses: %s".formatted(uses));
+                int uses = AnvilTooltipsImpl.costToUses(repairCost);
                 event.list.add(new LiteralText("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, Formatting.RED, uses, Formatting.GRAY)));
+                if (bl && !AnvilTooltipsImpl.isBookEmpty(tag)) {
+                    NbtList list = tag.getList("StoredEnchantments", 10);
+                    if (list.isEmpty()) return;
+                    event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, Formatting.RED, AnvilTooltipsImpl.getBaseCost(list) + repairCost, Formatting.GRAY)));
+                } else {
+                    event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, Formatting.RED, repairCost, Formatting.GRAY)));
+                }
             }
         }
-    }
-
-    @Unique
-    private static int costToUses(int cost) {
-        return switch (cost) {
-            default -> cost;
-            case 3 -> 2;
-            case 7 -> 3;
-            case 15 -> 4;
-            case 31 -> 5;
-        };
     }
 }
