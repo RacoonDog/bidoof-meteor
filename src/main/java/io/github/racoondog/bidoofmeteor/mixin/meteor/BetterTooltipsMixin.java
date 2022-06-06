@@ -43,18 +43,16 @@ public abstract class BetterTooltipsMixin {
         if (anvilUses.get()) {
             NbtCompound tag = event.itemStack.getNbt();
             if (tag == null) return;
-            boolean bl = event.itemStack.getItem().equals(Items.ENCHANTED_BOOK);
-            if ((event.itemStack.getItem().isEnchantable(event.itemStack) || bl)) {
+            boolean isBook = event.itemStack.getItem().equals(Items.ENCHANTED_BOOK);
+            if (isBook && AnvilTooltipsImpl.isBookEmpty(tag)) return;
+            if ((event.itemStack.getItem().isEnchantable(event.itemStack) || isBook)) {
                 int repairCost = tag.contains("RepairCost") ? tag.getInt("RepairCost") : 0;
                 int uses = AnvilTooltipsImpl.costToUses(repairCost);
-                event.list.add(new LiteralText("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, Formatting.RED, uses, Formatting.GRAY)));
-                if (bl && !AnvilTooltipsImpl.isBookEmpty(tag)) {
-                    NbtList list = tag.getList("StoredEnchantments", 10);
-                    if (list.isEmpty()) return;
-                    event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, Formatting.RED, AnvilTooltipsImpl.getBaseCost(list) + repairCost, Formatting.GRAY)));
-                } else {
-                    event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, Formatting.RED, repairCost, Formatting.GRAY)));
-                }
+                NbtList list = isBook ? tag.getList("StoredEnchantments", 10) : tag.getList("Enchantments", 10);
+                if (list.isEmpty()) return;
+                boolean optimized = AnvilTooltipsImpl.isOptimized(list, uses, isBook);
+                event.list.add(new LiteralText("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, optimized ? Formatting.GREEN : Formatting.RED, uses, Formatting.GRAY)));
+                event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, optimized ? Formatting.GREEN : Formatting.RED, isBook ? AnvilTooltipsImpl.getBaseCost(list) + repairCost : repairCost, Formatting.GRAY)));
             }
         }
     }

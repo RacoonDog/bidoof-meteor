@@ -1,5 +1,6 @@
 package io.github.racoondog.bidoofmeteor.impl;
 
+import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.Enchantment;
@@ -13,14 +14,7 @@ import java.util.Optional;
 @Environment(EnvType.CLIENT)
 public class AnvilTooltipsImpl {
     public static int costToUses(int cost) {
-        return switch (cost) {
-            default -> cost;
-            case 3 -> 2;
-            case 7 -> 3;
-            case 15 -> 4;
-            case 31 -> 5;
-            case 63 -> 6;
-        };
+        return log2(cost + 1);
     }
 
     public static boolean isBookEmpty(NbtCompound tag) {
@@ -28,14 +22,11 @@ public class AnvilTooltipsImpl {
     }
 
     public static int getRarity(Enchantment enchantment) {
-        int rarity = switch (enchantment.getRarity()) {
-            case COMMON -> 1;
-            case UNCOMMON -> 2;
-            case RARE -> 4;
-            case VERY_RARE -> 8;
+        return switch (enchantment.getRarity()) {
+            case COMMON, UNCOMMON -> 1;
+            case RARE -> 2;
+            case VERY_RARE -> 4;
         };
-
-        return Math.max(1, rarity / 2);
     }
 
     public static int getBaseCost(NbtList enchantments) {
@@ -44,8 +35,19 @@ public class AnvilTooltipsImpl {
             NbtCompound nbtCompound = enchantments.getCompound(i);
             Optional<Enchantment> enchantment = Registry.ENCHANTMENT.getOrEmpty(EnchantmentHelper.getIdFromNbt(nbtCompound));
             if (enchantment.isEmpty()) continue;
-            cost += getRarity(enchantment.get()) *EnchantmentHelper.getLevelFromNbt(nbtCompound);
+            cost += getRarity(enchantment.get()) * EnchantmentHelper.getLevelFromNbt(nbtCompound);
         }
         return cost;
+    }
+
+    public static boolean isOptimized(NbtList enchantments, int anvilUses, boolean isBook) {
+        if (anvilUses == 0) return true;
+        int enchants = enchantments.size();
+        int toReturn = (int) Math.pow(2, anvilUses);
+        return isBook ? enchants == toReturn : enchants == toReturn - 1;
+    }
+
+    public static int log2(int x) {
+        return 31 - Integer.numberOfLeadingZeros(x);
     }
 }
