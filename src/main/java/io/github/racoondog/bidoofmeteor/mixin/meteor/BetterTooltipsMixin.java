@@ -50,9 +50,8 @@ public abstract class BetterTooltipsMixin {
                 int uses = AnvilTooltipsImpl.costToUses(repairCost);
                 NbtList list = isBook ? tag.getList("StoredEnchantments", 10) : tag.getList("Enchantments", 10);
                 if (list.isEmpty()) return;
-                boolean optimized = AnvilTooltipsImpl.isOptimized(list, uses, isBook);
-                event.list.add(new LiteralText("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, optimized ? Formatting.GREEN : Formatting.RED, uses, Formatting.GRAY)));
-                event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, optimized ? Formatting.GREEN : Formatting.RED, isBook ? AnvilTooltipsImpl.getBaseCost(list) + repairCost : repairCost, Formatting.GRAY)));
+                event.list.add(new LiteralText("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, AnvilTooltipsImpl.getFormatting(list, uses, isBook), uses, Formatting.GRAY)));
+                event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, AnvilTooltipsImpl.getFormatting(list, uses, isBook), isBook ? AnvilTooltipsImpl.getBaseCost(list) + repairCost : repairCost, Formatting.GRAY)));
             }
         }
     }

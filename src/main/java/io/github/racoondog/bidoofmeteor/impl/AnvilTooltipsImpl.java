@@ -7,6 +7,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Optional;
@@ -44,7 +45,13 @@ public class AnvilTooltipsImpl {
         if (anvilUses == 0) return true;
         int enchants = enchantments.size();
         int toReturn = (int) Math.pow(2, anvilUses);
-        return isBook ? enchants == toReturn : enchants == toReturn - 1;
+        return isBook ? enchants >= toReturn : enchants >= toReturn - 1;
+    }
+
+    public static Formatting getFormatting(NbtList enchantments, int anvilUses, boolean isBook) {
+        if (isOptimized(enchantments, anvilUses, isBook)) return Formatting.GREEN;
+        else if (isOptimized(enchantments, anvilUses - 1, isBook)) return Formatting.YELLOW;
+        return Formatting.RED;
     }
 
     public static int log2(int x) {
