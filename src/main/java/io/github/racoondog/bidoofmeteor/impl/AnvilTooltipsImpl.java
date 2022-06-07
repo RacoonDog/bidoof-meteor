@@ -44,8 +44,8 @@ public class AnvilTooltipsImpl {
     public static boolean isOptimized(NbtList enchantments, int anvilUses, boolean isBook) {
         if (anvilUses == 0) return true;
         int enchants = enchantments.size();
-        int toReturn = (int) Math.pow(2, anvilUses);
-        return isBook ? enchants >= toReturn : enchants >= toReturn - 1;
+        int toReturn = (int) Math.pow(2, anvilUses - 1);
+        return isBook ? enchants - 1 >= toReturn: enchants >= toReturn;
     }
 
     public static Formatting getFormatting(NbtList enchantments, int anvilUses, boolean isBook) {
