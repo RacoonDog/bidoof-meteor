@@ -1,6 +1,5 @@
 package io.github.racoondog.bidoofmeteor.impl;
 
-import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.Enchantment;

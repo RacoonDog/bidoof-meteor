@@ -1,7 +1,7 @@
 package io.github.racoondog.bidoofmeteor.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
-import io.github.racoondog.bidoofmeteor.ChatUtils;
+import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;

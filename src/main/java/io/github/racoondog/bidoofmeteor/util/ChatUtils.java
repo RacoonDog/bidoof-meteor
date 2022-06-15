@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor;
+package io.github.racoondog.bidoofmeteor.util;
 
 import meteordevelopment.meteorclient.addons.AddonManager;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;

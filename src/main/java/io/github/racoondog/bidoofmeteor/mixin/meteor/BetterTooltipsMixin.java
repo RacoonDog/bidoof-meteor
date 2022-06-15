@@ -45,7 +45,7 @@ public abstract class BetterTooltipsMixin {
             if (tag == null) return;
             boolean isBook = event.itemStack.getItem().equals(Items.ENCHANTED_BOOK);
             if (isBook && AnvilTooltipsImpl.isBookEmpty(tag)) return;
-            if ((event.itemStack.getItem().isEnchantable(event.itemStack) || isBook)) {
+            if (event.itemStack.getItem().isEnchantable(event.itemStack) || isBook) {
                 int repairCost = tag.contains("RepairCost") ? tag.getInt("RepairCost") : 0;
                 int uses = AnvilTooltipsImpl.costToUses(repairCost);
                 NbtList list = isBook ? tag.getList("StoredEnchantments", 10) : tag.getList("Enchantments", 10);

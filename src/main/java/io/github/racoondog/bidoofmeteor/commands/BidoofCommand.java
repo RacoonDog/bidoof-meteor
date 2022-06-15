@@ -2,9 +2,9 @@ package io.github.racoondog.bidoofmeteor.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import io.github.racoondog.bidoofmeteor.ChatUtils;
 import io.github.racoondog.bidoofmeteor.hud.BidoofImageHud;
 import io.github.racoondog.bidoofmeteor.impl.PlayerHeadCacheImpl;
+import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.hud.HUD;
 import net.fabricmc.api.EnvType;
