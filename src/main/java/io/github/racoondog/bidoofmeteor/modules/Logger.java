@@ -151,7 +151,8 @@ public class Logger extends Module {
             assert mc.player.getBlockPos() != null;
             int minDistance = this.minimumDistance.get(); //comparing squared values is faster
             if (this.pos != null && distance(this.pos, mc.player.getBlockPos()) >= (minDistance * minDistance)) {
-                String output = MeteorStarscript.ss.run(this.teleportScript);
+
+                String output = MeteorStarscript.ss.run(this.teleportScript).toString();
                 if (this.teleportChatOutput.get()) {
                     ChatUtils.info(output);
                 }
@@ -169,7 +170,7 @@ public class Logger extends Module {
         if (mc.player.getHealth() <= 0.0f) {
             if (!this.deathLogged) {
                 this.deathLogged = true;
-                String output = MeteorStarscript.ss.run(this.deathScript);
+                String output = MeteorStarscript.ss.run(this.deathScript).toString();
                 if (this.deathChatOutput.get()) ChatUtils.info(output);
                 LOG.info(output);
             }
@@ -182,6 +183,6 @@ public class Logger extends Module {
     private void onDisconnect(GameLeftEvent event) {
         if (!this.disconnect.get() || !this.isActive()) return;
 
-        LOG.info(MeteorStarscript.ss.run(this.disconnectScript));
+        LOG.info(MeteorStarscript.ss.run(this.disconnectScript).toString());
     }
 }

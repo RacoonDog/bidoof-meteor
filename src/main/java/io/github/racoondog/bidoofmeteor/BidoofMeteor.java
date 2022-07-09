@@ -1,18 +1,18 @@
 package io.github.racoondog.bidoofmeteor;
 
 import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
+import io.github.racoondog.bidoofmeteor.hud.ImageHudPresets;
 import io.github.racoondog.bidoofmeteor.modules.Logger;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.systems.commands.Commands;
+import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
@@ -32,6 +32,8 @@ public class BidoofMeteor extends MeteorAddon {
         Modules.get().add(new Logger());
 
         Commands.get().add(new BidoofCommand());
+
+        Hud.get().register(ImageHudPresets.INFO);
 	}
 
 	@Override
@@ -42,12 +44,5 @@ public class BidoofMeteor extends MeteorAddon {
     @Override
     public GithubRepo getRepo() {
         return new GithubRepo("RacoonDog", "bidoof-meteor");
-    }
-
-    @Override
-    public String getCommit() {
-        ModMetadata meta = FabricLoader.getInstance().getModContainer("bidoof-meteor").get().getMetadata();
-        String commit = meta.getCustomValue("meteor-client:commit").getAsString();
-        return commit.isEmpty() ? null : commit;
     }
 }

@@ -3,7 +3,7 @@ package io.github.racoondog.bidoofmeteor.mixin.meteor;
 import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
-import meteordevelopment.meteorclient.systems.hud.modules.ActiveModulesHud;
+import meteordevelopment.meteorclient.systems.hud.elements.ActiveModulesHud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.spongepowered.asm.mixin.Final;

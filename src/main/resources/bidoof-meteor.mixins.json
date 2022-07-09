@@ -8,9 +8,9 @@
   "client": [
     "ClientPlayNetworkHandlerMixin",
     "Renderer2DMixin",
+    "StringReaderMixin",
     "meteor.ActiveModulesHudMixin",
     "meteor.BetterChatMixin",
-    "meteor.BetterTooltipsMixin",
-    "meteor.HUDMixin"
+    "meteor.BetterTooltipsMixin"
   ]
 }

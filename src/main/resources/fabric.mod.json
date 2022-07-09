@@ -19,12 +19,11 @@
     "bidoof-meteor.mixins.json"
   ],
   "custom": {
-    "meteor-client:color": "169,129,70",
-    "meteor-client:commit": "bcc1e5c3b47f2f27302fd064ee9dd6d00c164304"
+    "meteor-client:color": "169,129,70"
   },
   "depends": {
     "java": ">=17",
-    "minecraft": ">=${mc_version}",
-    "meteor-client": "*"
+    "minecraft": ">=1.19",
+    "meteor-client": ">=0.4.9"
   }
 }

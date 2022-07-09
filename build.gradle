@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
@@ -17,7 +17,6 @@ repositories {
         name = "meteor-maven-snapshots"
         url = "https://maven.meteordev.org/snapshots"
     }
-    jcenter()
 }
 
 dependencies {
@@ -26,8 +25,12 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+    // Required for loading hud image preset images
+    modImplementation "net.fabricmc.fabric-api:fabric-resource-loader-v0:+"
+    include "net.fabricmc.fabric-api:fabric-resource-loader-v0:+"
+
     // Meteor
-    modImplementation "meteordevelopment:meteor-client:${project.meteor_version}"
+    modImplementation "meteordevelopment:meteor-client:SNAPSHOT"
 }
 
 processResources {

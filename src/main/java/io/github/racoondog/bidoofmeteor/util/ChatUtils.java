@@ -7,7 +7,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -21,10 +24,10 @@ public class ChatUtils {
         ModMetadata meta = FabricLoader.getInstance().getModContainer("bidoof-meteor").get().getMetadata();
         if (meta.containsCustomValue("meteor-client:color")) color.parse(meta.getCustomValue("meteor-client:color").getAsString());
 
-        PREFIX = new LiteralText("")
+        PREFIX = Text.literal("")
             .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
             .append("[")
-            .append(new LiteralText("Bidoof").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color.getPacked()))))
+            .append(Text.literal("Bidoof").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color.getPacked()))))
             .append("] ");
     }
 
@@ -61,7 +64,7 @@ public class ChatUtils {
     }
 
     public static void sendMsg(String messageContent, Formatting messageColor) {
-        BaseText message = new LiteralText(messageContent);
+        MutableText message = Text.literal(messageContent);
         message.setStyle(message.getStyle().withFormatting(messageColor));
         sendMsg(message);
     }
@@ -69,7 +72,7 @@ public class ChatUtils {
     public static void sendMsg(Text msg) {
         if (mc.world == null) return;
 
-        BaseText message = new LiteralText("");
+        MutableText message = Text.literal("");
         message.append(PREFIX);
         message.append(msg);
 
@@ -78,10 +81,16 @@ public class ChatUtils {
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {
         String msg = String.format(format, args);
-        msg = msg.replaceAll("\\(default\\)", defaultColor.toString());
-        msg = msg.replaceAll("\\(highlight\\)", Formatting.WHITE.toString());
-        msg = msg.replaceAll("\\(underline\\)", Formatting.UNDERLINE.toString());
+        msg = msg.replace("(default)", defaultColor.toString());
+        msg = msg.replace("(highlight)", Formatting.WHITE.toString());
+        msg = msg.replace("(bold)", Formatting.BOLD.toString());
+        msg = msg.replace("(underline)", Formatting.UNDERLINE.toString());
 
         return msg;
+    }
+
+    public static void empty() {
+        if (mc.world == null) return;
+        ((ChatHudAccessor) mc.inGameHud.getChatHud()).add(Text.empty(), 0);
     }
 }

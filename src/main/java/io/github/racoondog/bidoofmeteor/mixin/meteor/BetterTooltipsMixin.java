@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,8 +50,8 @@ public abstract class BetterTooltipsMixin {
                 int uses = AnvilTooltipsImpl.costToUses(repairCost);
                 NbtList list = isBook ? tag.getList("StoredEnchantments", 10) : tag.getList("Enchantments", 10);
                 if (list.isEmpty()) return;
-                event.list.add(new LiteralText("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, AnvilTooltipsImpl.getFormatting(list, uses, isBook), uses, Formatting.GRAY)));
-                event.list.add(new LiteralText("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, AnvilTooltipsImpl.getFormatting(list, uses, isBook), isBook ? AnvilTooltipsImpl.getBaseCost(list) + repairCost : repairCost, Formatting.GRAY)));
+                event.list.add(Text.literal("%sAnvil Uses: %s%d%s.".formatted(Formatting.GRAY, AnvilTooltipsImpl.getFormatting(list, uses, isBook), uses, Formatting.GRAY)));
+                event.list.add(Text.literal("%sBase Cost: %s%d%s.".formatted(Formatting.GRAY, AnvilTooltipsImpl.getFormatting(list, uses, isBook), isBook ? AnvilTooltipsImpl.getBaseCost(list) + repairCost : repairCost, Formatting.GRAY)));
             }
         }
     }
