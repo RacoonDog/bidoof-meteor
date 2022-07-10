@@ -41,14 +41,14 @@ public class PlayerArgumentType {
 
     public static class UsernameArgumentType implements ArgumentType<String> {
         private static final Collection<String> EXAMPLES = List.of("seasnail8169", "MineGame159");
-        private static final Pattern USERNAME_REGEX = Pattern.compile("\\w{3,16}$");
+        private static final Pattern USERNAME_REGEX = Pattern.compile("\\w{1,16}$");
         public static final DynamicCommandExceptionType INVALID_USERNAME = new DynamicCommandExceptionType(o -> new LiteralMessage(o + " is not a valid username."));
 
         @Override
         public String parse(StringReader reader) throws CommandSyntaxException {
             String string = ((IStringReader)reader).readUsername();
 
-            if (string.length() < 3 || string.length() > 16 || !USERNAME_REGEX.matcher(string).matches()) throw INVALID_USERNAME.create(string);
+            if (string.length() < 1 || string.length() > 16 || !USERNAME_REGEX.matcher(string).matches()) throw INVALID_USERNAME.create(string);
 
             return string;
         }

@@ -5,6 +5,7 @@
   "name": "Bidoof Meteor",
   "description": "Bidoof.",
   "authors": [ "Crosby" ],
+  "contributors": [ "RickyTheRacc" ],
   "contact": {
     "repo": "https://github.com/RacoonDog/bidoof-meteor"
   },
