@@ -9,7 +9,6 @@
     "ClientPlayNetworkHandlerMixin",
     "Renderer2DMixin",
     "StringReaderMixin",
-    "meteor.ActiveModulesHudMixin",
     "meteor.BetterChatMixin",
     "meteor.BetterTooltipsMixin"
   ]

@@ -2,6 +2,8 @@ package io.github.racoondog.bidoofmeteor;
 
 import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
 import io.github.racoondog.bidoofmeteor.hud.ImageHudPresets;
+import io.github.racoondog.bidoofmeteor.hud.TextHudPresets;
+import io.github.racoondog.bidoofmeteor.modules.Announcer;
 import io.github.racoondog.bidoofmeteor.modules.Logger;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.MeteorClient;
@@ -30,10 +32,14 @@ public class BidoofMeteor extends MeteorAddon {
         ChatUtils.init();
 
         Modules.get().add(new Logger());
+        Modules.get().add(new Announcer());
 
         Commands.get().add(new BidoofCommand());
 
         Hud.get().register(ImageHudPresets.INFO);
+        TextHudPresets.init();
+
+        BidoofStarscript.init();
 	}
 
 	@Override
