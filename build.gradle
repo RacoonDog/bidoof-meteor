@@ -31,6 +31,8 @@ dependencies {
 
     // Meteor
     modImplementation "meteordevelopment:meteor-client:SNAPSHOT"
+
+    modImplementation "com.ptsmods:devlogin:2.1"
 }
 
 processResources {

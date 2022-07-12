@@ -24,7 +24,7 @@ public class BidoofCommand extends Command {
             .then(literal("namehistory")
                 .then(literal("username").then(argument("username", PlayerArgumentType.username()).executes(NameHistoryCommand::username)))
                 .then(literal("uuid").then(argument("uuid", PlayerArgumentType.uuid()).executes(NameHistoryCommand::uuid)))
-            );
+            ).then(literal("detectfishy").executes(DetectFishyCommand::detectFishy));
     }
 
     private static int clearCache(CommandContext<CommandSource> context) {
