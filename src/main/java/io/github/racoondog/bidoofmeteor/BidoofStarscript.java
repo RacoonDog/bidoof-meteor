@@ -4,6 +4,7 @@ import meteordevelopment.starscript.value.Value;
 import meteordevelopment.starscript.value.ValueMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 
@@ -21,6 +22,7 @@ public class BidoofStarscript {
     public static void init() {
         ss.set("bidoof", Value.map(new ValueMap()
             .set("_toString", () -> Value.string("boof"))
+            .set("version", () -> Value.string(FabricLoader.getInstance().getModContainer("bidoof-meteor").isPresent() ? FabricLoader.getInstance().getModContainer("bidoof-meteor").get().getMetadata().getVersion().getFriendlyString() : "boof"))
             .set("fake_x", () -> Value.number(mc.player != null ? fakeX + mc.player.getX(): fakeX))
             .set("fake_y", () -> Value.number(mc.player != null ? fakeY + mc.player.getY() : fakeY))
             .set("fake_z", () -> Value.number(mc.player != null ? fakeZ + mc.player.getZ() : fakeZ))
