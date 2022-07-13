@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.util.Pair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -34,10 +37,6 @@ public abstract class ClientPlayNetworkHandlerMixin implements IClientPlayNetwor
     @Final
     private Map<UUID, PlayerListEntry> playerListEntries;
 
-    @Shadow
-    @Final
-    private GameProfile profile;
-
     @Inject(method = "getPlayerListEntry(Ljava/lang/String;)Lnet/minecraft/client/network/PlayerListEntry;", at = @At("RETURN"), cancellable = true)
     private void mixin(String profileName, CallbackInfoReturnable<PlayerListEntry> cir) {
         if (!PlayerHeadCacheImpl.canCachePlayerHeads()) return;
@@ -51,10 +50,9 @@ public abstract class ClientPlayNetworkHandlerMixin implements IClientPlayNetwor
 
     @Inject(method = "onPlayerList", at = @At(value = "TAIL"))
     private void fishydetector(PlayerListS2CPacket packet, CallbackInfo ci) {
-        for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
-            PlayerListEntry playerListEntry = new PlayerListEntry(entry, mc.getServicesSignatureVerifier());
-            FishyDetectorImpl.detectFishy(playerListEntry.getProfile());
-        }
+        if (packet.getAction() != PlayerListS2CPacket.Action.ADD_PLAYER) return;
+        List<PlayerListS2CPacket.Entry> list = packet.getEntries();
+        FishyDetectorImpl.detectFishy(list);
     }
 
     @Override
