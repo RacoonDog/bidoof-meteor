@@ -8,7 +8,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Pair;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class ApiUtils {

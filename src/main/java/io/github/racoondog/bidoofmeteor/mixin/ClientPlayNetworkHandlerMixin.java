@@ -1,34 +1,25 @@
 package io.github.racoondog.bidoofmeteor.mixin;
 
-import com.mojang.authlib.GameProfile;
 import io.github.racoondog.bidoofmeteor.impl.FishyDetectorImpl;
 import io.github.racoondog.bidoofmeteor.impl.PlayerHeadCacheImpl;
 import io.github.racoondog.bidoofmeteor.mixininterface.IClientPlayNetworkHandler;
-import io.github.racoondog.bidoofmeteor.util.ApiUtils;
-import io.github.racoondog.bidoofmeteor.util.ChatUtils;
+import io.github.racoondog.bidoofmeteor.modules.FishyDetector;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.util.Pair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
@@ -50,7 +41,7 @@ public abstract class ClientPlayNetworkHandlerMixin implements IClientPlayNetwor
 
     @Inject(method = "onPlayerList", at = @At(value = "TAIL"))
     private void fishydetector(PlayerListS2CPacket packet, CallbackInfo ci) {
-        if (packet.getAction() != PlayerListS2CPacket.Action.ADD_PLAYER) return;
+        if (!FishyDetector.active() || packet.getAction() != PlayerListS2CPacket.Action.ADD_PLAYER) return;
         List<PlayerListS2CPacket.Entry> list = packet.getEntries();
         FishyDetectorImpl.detectFishy(list);
     }

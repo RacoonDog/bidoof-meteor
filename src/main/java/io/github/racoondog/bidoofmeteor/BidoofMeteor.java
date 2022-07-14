@@ -4,6 +4,7 @@ import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
 import io.github.racoondog.bidoofmeteor.hud.ImageHudPresets;
 import io.github.racoondog.bidoofmeteor.hud.TextHudPresets;
 import io.github.racoondog.bidoofmeteor.modules.Announcer;
+import io.github.racoondog.bidoofmeteor.modules.FishyDetector;
 import io.github.racoondog.bidoofmeteor.modules.Logger;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.MeteorClient;
@@ -33,6 +34,7 @@ public class BidoofMeteor extends MeteorAddon {
 
         Modules.get().add(new Logger());
         Modules.get().add(new Announcer());
+        Modules.get().add(new FishyDetector());
 
         Commands.get().add(new BidoofCommand());
 
