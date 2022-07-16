@@ -7,11 +7,14 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 
 import static meteordevelopment.meteorclient.utils.Utils.WHITE;
 
+@Environment(EnvType.CLIENT)
 public class ImageHud extends HudElement {
     private final SettingGroup sgGeneral = this.settings.getDefaultGroup();
     public final Setting<String> image = this.sgGeneral.add(new StringSetting.Builder()

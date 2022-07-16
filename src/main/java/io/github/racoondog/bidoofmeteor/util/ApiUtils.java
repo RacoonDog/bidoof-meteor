@@ -6,6 +6,8 @@ import meteordevelopment.meteorclient.utils.network.Http;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,27 +30,27 @@ public class ApiUtils {
         return Http.post(urlString).bodyJson(body).sendJson(type);
     }
 
-    public static String uuidFromName(String name) {
+    public static @Nullable String uuidFromName(String name) {
         String url = USERNAME_TO_UUID.formatted(name);
         JsonObject object = getJson(url, JsonObject.class);
         if (object == null) return null;
         return object.get("id").getAsString();
     }
 
-    private static List<Pair<String, String>> unsafeUuidsFromNames(List<String> names) {
-        JsonArray postArray = new JsonArray();
-        names.forEach(postArray::add);
-        JsonArray array = postJson(USERNAMES_TO_UUIDS, JsonArray.class, postArray);
-        if (array == null) return new ArrayList<>();
+    private static @NotNull List<Pair<String, String>> unsafeUuidsFromNames(List<String> names) {
+        JsonArray nameArray = new JsonArray();
+        names.forEach(nameArray::add);
+        JsonArray uuidArray = postJson(USERNAMES_TO_UUIDS, JsonArray.class, nameArray);
+        if (uuidArray == null) return new ArrayList<>();
         List<Pair<String, String>> output = new ArrayList<>();
-        array.iterator().forEachRemaining(jsonElement -> {
+        uuidArray.iterator().forEachRemaining(jsonElement -> {
             JsonObject object = jsonElement.getAsJsonObject();
             output.add(new Pair<>(object.get("name").getAsString(), object.get("id").getAsString()));
         });
         return output;
     }
 
-    public static List<Pair<String, String>> uuidsFromNames(List<String> names) {
+    public static @NotNull List<Pair<String, String>> uuidsFromNames(List<String> names) {
         List<Pair<String, String>> out = new ArrayList<>();
         if (names.size() == 0) return out;
         else if (names.size() == 1) out.add(new Pair<>(names.get(0), uuidFromName(names.get(0))));
@@ -57,7 +59,7 @@ public class ApiUtils {
         return out;
     }
 
-    public static Map<String, Long> nameHistoryFromUuid(String uuid) {
+    public static @Nullable Map<String, Long> nameHistoryFromUuid(String uuid) {
         String url = UUID_TO_NAME_HISTORY.formatted(uuid);
         JsonArray array = getJson(url, JsonArray.class);
         if (array == null) return null;
@@ -69,7 +71,7 @@ public class ApiUtils {
         return output;
     }
 
-    public static JsonObject profileFromUuid(String uuid) {
+    public static @Nullable JsonObject profileFromUuid(String uuid) {
         String url = UUID_TO_PROFILE_AND_SKIN.formatted(uuid);
         return getJson(url, JsonObject.class);
     }

@@ -39,7 +39,7 @@ public abstract class BetterTooltipsMixin {
     }
 
     @Inject(method = "appendTooltip", at = @At("HEAD"))
-    private void inject(ItemStackTooltipEvent event, CallbackInfo ci) {
+    private void anvilTooltips(ItemStackTooltipEvent event, CallbackInfo ci) {
         if (anvilUses.get()) {
             NbtCompound tag = event.itemStack.getNbt();
             if (tag == null) return;

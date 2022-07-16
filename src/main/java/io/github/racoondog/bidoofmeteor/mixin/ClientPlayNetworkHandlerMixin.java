@@ -1,8 +1,8 @@
 package io.github.racoondog.bidoofmeteor.mixin;
 
+import com.mojang.authlib.GameProfile;
 import io.github.racoondog.bidoofmeteor.impl.FishyDetectorImpl;
 import io.github.racoondog.bidoofmeteor.impl.PlayerHeadCacheImpl;
-import io.github.racoondog.bidoofmeteor.mixininterface.IClientPlayNetworkHandler;
 import io.github.racoondog.bidoofmeteor.modules.FishyDetector;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,19 +18,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
-public abstract class ClientPlayNetworkHandlerMixin implements IClientPlayNetworkHandler {
-    @Shadow
-    @Final
-    private Map<UUID, PlayerListEntry> playerListEntries;
+public abstract class ClientPlayNetworkHandlerMixin {
+    @Shadow @Final private GameProfile profile;
 
     @Inject(method = "getPlayerListEntry(Ljava/lang/String;)Lnet/minecraft/client/network/PlayerListEntry;", at = @At("RETURN"), cancellable = true)
-    private void mixin(String profileName, CallbackInfoReturnable<PlayerListEntry> cir) {
-        if (!PlayerHeadCacheImpl.canCachePlayerHeads()) return;
+    private void cachePlayerHeads(String profileName, CallbackInfoReturnable<PlayerListEntry> cir) {
+        if (!PlayerHeadCacheImpl.canCachePlayerHeads() || profileName.equals(profile.getName())) return;
         PlayerListEntry p = cir.getReturnValue();
         if (p != null) {
             if (!PlayerHeadCacheImpl.DYNAMIC_PLAYER_HEAD_CACHE.containsKey(profileName)) PlayerHeadCacheImpl.DYNAMIC_PLAYER_HEAD_CACHE.put(profileName, p);
@@ -44,10 +40,5 @@ public abstract class ClientPlayNetworkHandlerMixin implements IClientPlayNetwor
         if (!FishyDetector.active() || packet.getAction() != PlayerListS2CPacket.Action.ADD_PLAYER) return;
         List<PlayerListS2CPacket.Entry> list = packet.getEntries();
         FishyDetectorImpl.detectFishy(list);
-    }
-
-    @Override
-    public Map<UUID, PlayerListEntry> getPlayerListEntries() {
-        return playerListEntries;
     }
 }

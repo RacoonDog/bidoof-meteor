@@ -1,8 +1,12 @@
 package io.github.racoondog.bidoofmeteor.util;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class Utils {
     public static <T> List<List<T>> partition(List<T> list, final int size) {
         List<List<T>> parts = new ArrayList<>();

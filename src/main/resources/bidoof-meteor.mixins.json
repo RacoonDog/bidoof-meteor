@@ -10,6 +10,8 @@
     "Renderer2DMixin",
     "StringReaderMixin",
     "meteor.BetterChatMixin",
-    "meteor.BetterTooltipsMixin"
+    "meteor.BetterTooltipsMixin",
+    "meteor.DiscordPresenceMixin",
+    "meteor.MeteorClientMixin"
   ]
 }

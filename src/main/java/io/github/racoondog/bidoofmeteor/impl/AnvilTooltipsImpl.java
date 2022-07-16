@@ -21,7 +21,7 @@ public class AnvilTooltipsImpl {
         return !tag.contains("StoredEnchantments");
     }
 
-    public static int getRarity(Enchantment enchantment) {
+    private static int getRarity(Enchantment enchantment) {
         return switch (enchantment.getRarity()) {
             case COMMON, UNCOMMON -> 1;
             case RARE -> 2;
@@ -40,7 +40,7 @@ public class AnvilTooltipsImpl {
         return cost;
     }
 
-    public static boolean isOptimized(NbtList enchantments, int anvilUses, boolean isBook) {
+    private static boolean isOptimized(NbtList enchantments, int anvilUses, boolean isBook) {
         if (anvilUses == 0) return true;
         int enchants = enchantments.size();
         int toReturn = (int) Math.pow(2, anvilUses - 1);
@@ -53,7 +53,7 @@ public class AnvilTooltipsImpl {
         return Formatting.RED;
     }
 
-    public static int log2(int x) {
+    private static int log2(int x) {
         return 31 - Integer.numberOfLeadingZeros(x);
     }
 }

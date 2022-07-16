@@ -26,7 +26,7 @@ public abstract class BetterChatMixin implements IBetterChat {
     private Setting<Boolean> cachePlayerHeads;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void injectInit(CallbackInfo ci) {
+    private void cachePlayerHeads(CallbackInfo ci) {
         cachePlayerHeads = sgGeneral.add(new BoolSetting.Builder()
             .name("cache-player-heads")
             .description("Caches player heads in order to show them even after they leave.")
