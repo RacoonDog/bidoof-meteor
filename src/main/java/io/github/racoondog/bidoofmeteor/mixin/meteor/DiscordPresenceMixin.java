@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(EnvType.CLIENT)
-@Mixin(DiscordPresence.class)
+@Mixin(value = DiscordPresence.class, remap = false)
 public abstract class DiscordPresenceMixin {
     @Redirect(method = "onTick", at = @At(value = "INVOKE", target = "Lmeteordevelopment/discordipc/RichPresence;setState(Ljava/lang/String;)V"))
     private void addStates(RichPresence rpc, String defaultState) {
