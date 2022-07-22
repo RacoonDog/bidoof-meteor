@@ -15,7 +15,7 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public abstract class DiscordPresenceMixin {
     @Redirect(method = "onTick", at = @At(value = "INVOKE", target = "Lmeteordevelopment/discordipc/RichPresence;setState(Ljava/lang/String;)V"))
     private void addStates(RichPresence rpc, String defaultState) {
-        assert mc.currentScreen != null;
+        if (mc.currentScreen == null) return;
         String className = mc.currentScreen.getClass().getName();
         if (className.startsWith("com.wildfire.gui.screen")) rpc.setState("Changing options");
         else rpc.setState(defaultState);

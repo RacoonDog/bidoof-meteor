@@ -16,6 +16,7 @@ import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,9 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Environment(EnvType.CLIENT)
 @Mixin(value = BetterTooltips.class, remap = false)
 public abstract class BetterTooltipsMixin {
-    @Shadow @Final
-    private SettingGroup sgOther;
+    @Shadow @Final private SettingGroup sgOther;
 
+    @Unique
     private Setting<Boolean> anvilUses;
 
     @Inject(method = "<init>", at = @At("TAIL"))

@@ -22,13 +22,12 @@ import java.lang.invoke.MethodHandles;
 public class BidoofMeteor extends MeteorAddon {
     public static final org.slf4j.Logger LOG = LogUtils.getLogger();
 	public static final Category CATEGORY = new Category("Bidoof");
+    public static BidoofMeteor INSTANCE;
 
 	@Override
 	public void onInitialize() {
 		LOG.info("Initializing Bidoof Meteor");
-
-        MeteorClient.EVENT_BUS.registerLambdaFactory("io.github.racoondog.bidoofmeteor", (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
-        ChatUtils.init();
+        INSTANCE = this;
 
         Modules.get().add( new Logger() );
         Modules.get().add( new Announcer() );
@@ -67,6 +66,11 @@ public class BidoofMeteor extends MeteorAddon {
 	public void onRegisterCategories() {
 		Modules.registerCategory(CATEGORY);
 	}
+
+    @Override
+    public String getPackage() {
+        return "io.github.racoondog.bidoofmeteor";
+    }
 
     @Override
     public GithubRepo getRepo() {

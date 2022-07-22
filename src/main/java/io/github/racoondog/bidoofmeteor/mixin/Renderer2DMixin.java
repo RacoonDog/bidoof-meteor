@@ -13,9 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Environment(EnvType.CLIENT)
 @Mixin(value = Renderer2D.class, remap = false)
 public abstract class Renderer2DMixin implements IRenderer2D {
-    @Shadow
-    @Final
-    public Mesh triangles;
+    @Shadow @Final public Mesh triangles;
 
     @Override
     public void texQuadHFlip(double x, double y, double width, double height, Color color) {

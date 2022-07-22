@@ -1,5 +1,7 @@
 package io.github.racoondog.bidoofmeteor.util;
 
+import io.github.racoondog.bidoofmeteor.BidoofMeteor;
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.addons.AddonManager;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.utils.render.color.Color;
@@ -17,19 +19,11 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(EnvType.CLIENT)
 public class ChatUtils {
-    private static Text PREFIX;
-
-    public static void init() {
-        Color color = AddonManager.METEOR.color.copy();
-        ModMetadata meta = FabricLoader.getInstance().getModContainer("bidoof-meteor").get().getMetadata();
-        if (meta.containsCustomValue("meteor-client:color")) color.parse(meta.getCustomValue("meteor-client:color").getAsString());
-
-        PREFIX = Text.literal("")
-            .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
-            .append("[")
-            .append(Text.literal("Bidoof").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color.getPacked()))))
-            .append("] ");
-    }
+    private static final Text PREFIX = Text.literal("")
+        .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
+        .append("[")
+        .append(Text.literal("Bidoof").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(BidoofMeteor.INSTANCE.color.getPacked()))))
+        .append("] ");
 
     // Default
     public static void info(String message, Object... args) {

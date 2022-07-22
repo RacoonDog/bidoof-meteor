@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Environment(EnvType.CLIENT)
 @Mixin(value = MeteorClient.class, remap = false)
 public abstract class MeteorClientMixin {
-    @Redirect(method = "lambda$onInitializeClient$1", at = @At(value = "INVOKE", target = "Lmeteordevelopment/meteorclient/systems/modules/misc/DiscordPresence;toggle()V"))
+    @Redirect(method = "lambda$onInitializeClient$0", at = @At(value = "INVOKE", target = "Lmeteordevelopment/meteorclient/systems/modules/misc/DiscordPresence;toggle()V"))
     private static void disableRPCByDefault(DiscordPresence instance) {}
 }
