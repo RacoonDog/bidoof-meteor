@@ -1,6 +1,7 @@
 package io.github.racoondog.bidoofmeteor.commands;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.racoondog.bidoofmeteor.commands.arguments.PlayerArgumentType;
@@ -14,21 +15,40 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Environment(EnvType.CLIENT)
 public class NameHistoryCommand {
     public static int uuid(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        String uuid = PlayerArgumentType.getUUID(context, "uuid");
-        nameHistory(uuid, uuid);
-        return 1;
+        AtomicReference<CommandSyntaxException> ae = new AtomicReference<>();
+        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
+            String uuid = PlayerArgumentType.getUUID(context, "uuid");
+            try {
+                nameHistory(uuid, uuid);
+            } catch (CommandSyntaxException exception) {
+                ae.set(exception);
+            }
+        });
+        if (ae.get() != null) throw ae.get();
+
+        return Command.SINGLE_SUCCESS;
     }
 
     public static int username(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        String username = PlayerArgumentType.getUsername(context, "username");
-        String uuid = ApiUtils.uuidFromName(username);
-        if (uuid == null) throw PlayerArgumentType.UsernameArgumentType.INVALID_USERNAME.create(username);
-        nameHistory(uuid, username);
-        return 1;
+        AtomicReference<CommandSyntaxException> ae = new AtomicReference<>();
+        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
+            String username = PlayerArgumentType.getUsername(context, "username");
+            String uuid = ApiUtils.uuidFromName(username);
+            try {
+                if (uuid == null) throw PlayerArgumentType.UsernameArgumentType.INVALID_USERNAME.create(username);
+                nameHistory(uuid, username);
+            } catch (CommandSyntaxException exception) {
+                ae.set(exception);
+            }
+        });
+        if (ae.get() != null) throw ae.get();
+
+        return Command.SINGLE_SUCCESS;
     }
 
     public static void nameHistory(String uuid, String source) throws CommandSyntaxException {

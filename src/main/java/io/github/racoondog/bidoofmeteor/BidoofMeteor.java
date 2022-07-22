@@ -1,11 +1,10 @@
 package io.github.racoondog.bidoofmeteor;
 
+import com.mojang.logging.LogUtils;
 import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
 import io.github.racoondog.bidoofmeteor.hud.ImageHudPresets;
 import io.github.racoondog.bidoofmeteor.hud.TextHudPresets;
-import io.github.racoondog.bidoofmeteor.modules.Announcer;
-import io.github.racoondog.bidoofmeteor.modules.FishyDetector;
-import io.github.racoondog.bidoofmeteor.modules.Logger;
+import io.github.racoondog.bidoofmeteor.modules.*;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.addons.GithubRepo;
@@ -16,13 +15,12 @@ import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
 @Environment(EnvType.CLIENT)
 public class BidoofMeteor extends MeteorAddon {
-	public static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BidoofMeteor.class);
+    public static final org.slf4j.Logger LOG = LogUtils.getLogger();
 	public static final Category CATEGORY = new Category("Bidoof");
 
 	@Override
@@ -35,6 +33,11 @@ public class BidoofMeteor extends MeteorAddon {
         Modules.get().add(new Logger());
         Modules.get().add(new Announcer());
         Modules.get().add(new FishyDetector());
+        Modules.get().add(new SpamPlus());
+        Modules.get().add(new CommandSubstituter());
+        Modules.get().add(new ChatCommands());
+        Modules.get().add(new AutoTpa());
+        Modules.get().add(new ChatEmotes());
 
         Commands.get().add(new BidoofCommand());
 

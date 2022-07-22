@@ -81,10 +81,10 @@ public class ChatUtils {
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {
         String msg = String.format(format, args);
-        msg = msg.replace("(default)", defaultColor.toString());
-        msg = msg.replace("(highlight)", Formatting.WHITE.toString());
-        msg = msg.replace("(bold)", Formatting.BOLD.toString());
-        msg = msg.replace("(underline)", Formatting.UNDERLINE.toString());
+        if (msg.contains("(default)")) msg = msg.replace("(default)", defaultColor.toString());
+        if (msg.contains("(highlight)")) msg = msg.replace("(highlight)", Formatting.WHITE.toString());
+        if (msg.contains("(bold)")) msg = msg.replace("(bold)", Formatting.BOLD.toString());
+        if (msg.contains("(underline)")) msg = msg.replace("(underline)", Formatting.UNDERLINE.toString());
 
         return msg;
     }
@@ -92,5 +92,9 @@ public class ChatUtils {
     public static void empty() {
         if (mc.world == null) return;
         ((ChatHudAccessor) mc.inGameHud.getChatHud()).add(Text.empty(), 0);
+    }
+
+    public static void say(String message) {
+        if (mc.player != null) mc.player.sendChatMessage(message);
     }
 }

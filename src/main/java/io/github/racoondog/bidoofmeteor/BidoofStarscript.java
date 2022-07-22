@@ -15,9 +15,9 @@ import static meteordevelopment.meteorclient.utils.misc.MeteorStarscript.ss;
 public class BidoofStarscript {
     private static final Random random = new LocalRandom(System.currentTimeMillis());
 
-    private static double fakeX = genRandom(10000000, 20000000);
-    private static double fakeY = genRandom(10, 20);
-    private static double fakeZ = genRandom(10000000, 20000000);
+    public static double fakeX = genRandom(10000000, 20000000);
+    public static double fakeY = genRandom(10, 20);
+    public static double fakeZ = genRandom(10000000, 20000000);
 
     public static void init() {
         ss.set("bidoof", Value.map(new ValueMap()

@@ -2,9 +2,11 @@ package io.github.racoondog.bidoofmeteor.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import meteordevelopment.meteorclient.utils.network.Http;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Environment(EnvType.CLIENT)
 public class ApiUtils {
@@ -22,11 +26,15 @@ public class ApiUtils {
     private static final String UUID_TO_NAME_HISTORY = "https://api.mojang.com/user/profiles/%s/names";
     private static final String UUID_TO_PROFILE_AND_SKIN = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
 
-    private static <T> T getJson(String urlString, Type type) {
+    public static final ExecutorService API_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
+
+    private static <T> @Nullable T getJson(String urlString, Type type) {
+        if (MinecraftClient.getInstance().isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
         return Http.get(urlString).sendJson(type);
     }
 
-    private static <T> T postJson(String urlString, Type type, Object body) {
+    private static <T> @Nullable T postJson(String urlString, Type type, Object body) {
+        if (MinecraftClient.getInstance().isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
         return Http.post(urlString).bodyJson(body).sendJson(type);
     }
 
@@ -55,7 +63,7 @@ public class ApiUtils {
         if (names.size() == 0) return out;
         else if (names.size() == 1) out.add(new Pair<>(names.get(0), uuidFromName(names.get(0))));
         else if (names.size() <= 10) return unsafeUuidsFromNames(names);
-        else Utils.partition(names, 10).forEach((list) -> out.addAll(unsafeUuidsFromNames(list)));
+        else ListUtils.partition(names, 10).forEach((list) -> out.addAll(unsafeUuidsFromNames(list)));
         return out;
     }
 

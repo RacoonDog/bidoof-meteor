@@ -17,9 +17,10 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.Item;
 
+//Skidded from meteor, blow me
 @Environment(EnvType.CLIENT)
 public class Announcer extends Module {
-    private static final double TICK = 1.0 / 20.0;
+    private static final float TICK = 1.0f / 20.0f;
 
     private final Feature[] features = {
         new Moving(),

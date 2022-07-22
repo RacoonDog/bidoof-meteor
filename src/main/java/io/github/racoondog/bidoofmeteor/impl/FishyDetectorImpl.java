@@ -11,18 +11,15 @@ import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(EnvType.CLIENT)
 public class FishyDetectorImpl {
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
     private static String previousName;
 
     public static void detectFishy(final List<PlayerListS2CPacket.Entry> list) {
-        EXECUTOR_SERVICE.execute(() -> {
+        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
             List<String> names = new ArrayList<>();
             for (var entry : list) {
                 String name = new PlayerListEntry(entry, mc.getServicesSignatureVerifier()).getProfile().getName();

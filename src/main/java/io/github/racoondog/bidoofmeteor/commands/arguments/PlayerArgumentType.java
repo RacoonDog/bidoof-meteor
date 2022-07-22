@@ -55,6 +55,7 @@ public class PlayerArgumentType {
 
         @Override
         public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+            assert mc.world != null;
             return CommandSource.suggestMatching(mc.world.getPlayers().stream().map(PlayerEntity::getEntityName), builder);
         }
 
@@ -80,6 +81,7 @@ public class PlayerArgumentType {
 
         @Override
         public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+            assert mc.world != null;
             return CommandSource.suggestMatching(mc.world.getPlayers().stream().map(PlayerEntity::getUuidAsString), builder);
         }
 

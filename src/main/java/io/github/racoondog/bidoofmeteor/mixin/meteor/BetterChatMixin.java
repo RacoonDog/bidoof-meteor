@@ -17,11 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Environment(EnvType.CLIENT)
 @Mixin(value = BetterChat.class, remap = false)
 public abstract class BetterChatMixin implements IBetterChat {
-    @Shadow @Final
-    private SettingGroup sgGeneral;
-
-    @Shadow @Final
-    private Setting<Boolean> playerHeads;
+    @Shadow @Final private SettingGroup sgGeneral;
+    @Shadow @Final private Setting<Boolean> playerHeads;
 
     private Setting<Boolean> cachePlayerHeads;
 
