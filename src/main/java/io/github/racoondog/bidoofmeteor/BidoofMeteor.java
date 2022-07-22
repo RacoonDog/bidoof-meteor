@@ -30,21 +30,37 @@ public class BidoofMeteor extends MeteorAddon {
         MeteorClient.EVENT_BUS.registerLambdaFactory("io.github.racoondog.bidoofmeteor", (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
         ChatUtils.init();
 
-        Modules.get().add(new Logger());
-        Modules.get().add(new Announcer());
-        Modules.get().add(new FishyDetector());
-        Modules.get().add(new SpamPlus());
-        Modules.get().add(new CommandSubstituter());
-        Modules.get().add(new ChatCommands());
-        Modules.get().add(new AutoTpa());
-        Modules.get().add(new ChatEmotes());
+        Modules.get().add( new Logger() );
+        Modules.get().add( new Announcer() );
+        Modules.get().add( new FishyDetector() );
+        Modules.get().add( new SpamPlus() );
+        Modules.get().add( new CommandSubstituter() );
+        Modules.get().add( new ChatCommands() );
+        Modules.get().add( new AutoTpa() );
+        Modules.get().add( new ChatEmotes() );
 
-        Commands.get().add(new BidoofCommand());
+        Commands.get().add( new BidoofCommand() );
 
         Hud.get().register(ImageHudPresets.INFO);
         TextHudPresets.init();
 
         BidoofStarscript.init();
+
+        //add(new Logger Module - Saves important information on certain events such as death in the logs.());
+        //add(new Announcer Module - Re-added the removed Announcer module from Meteor Client.());
+        //add(new SpamPlus Module - Spam the bee movie script.());
+        //add(new Command Substituter Module - Automatically replaces commands sent with different commands.());
+        //add(new Chat Commands Module - Turn your account into a Discord bot.());
+        //add(new Auto TPA Module - Automatically accept TPA requests based on a whitelist.());
+        //add(new Chat Emotes Module - Discord emotes for Minecraft, vanilla compatible.());
+        //add(new Image HUD Element - Customizable image HUD Element.());
+        //add(new Fake Position Text HUD Element - Fake your position in your HUD.());
+        //add(new getUuid Command - Get the UUID of any account based on their username.());
+        //add(new nameHistory Command - Get the name history of any account based on either username or UUID.());
+        //add(new lookAt Command - Look at any location in the world.());
+        //add(new Player Head Cache - Keep player heads in chat even after the player has left. Part of BetterChat());
+        //add(new Anvil Tooltip Info - Anvil-related info, xp cost & anvil uses, of items in the tooltip. Part of BetterTooltips());
+        //add(new Disables DiscordPresence by default.());
 	}
 
 	@Override

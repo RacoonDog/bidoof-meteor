@@ -25,11 +25,11 @@ public class BidoofCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(literal("flushCache").executes(BidoofCommand::clearCache))
-            .then(literal("getuuid").then(argument("username", PlayerArgumentType.username()).executes(BidoofCommand::getUuid)))
-            .then(literal("namehistory")
+            .then(literal("getUuid").then(argument("username", PlayerArgumentType.username()).executes(BidoofCommand::getUuid)))
+            .then(literal("nameHistory")
                 .then(literal("username").then(argument("username", PlayerArgumentType.username()).executes(NameHistoryCommand::username)))
                 .then(literal("uuid").then(argument("uuid", PlayerArgumentType.uuid()).executes(NameHistoryCommand::uuid))))
-            .then(literal("lookat").then(argument("location", Vec3ArgumentType.vec3()).executes(BidoofCommand::lookAt)));
+            .then(literal("lookAt").then(argument("location", Vec3ArgumentType.vec3()).executes(BidoofCommand::lookAt)));
     }
 
     private static int lookAt(CommandContext<CommandSource> context) {
