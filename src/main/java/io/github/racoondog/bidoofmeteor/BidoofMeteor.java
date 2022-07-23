@@ -7,8 +7,10 @@ import io.github.racoondog.bidoofmeteor.hud.TextHudPresets;
 import io.github.racoondog.bidoofmeteor.modules.*;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.MeteorClient;
+import io.github.racoondog.bidoofmeteor.themes.DarkPurpleTheme;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
+import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.systems.commands.Commands;
 import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.modules.Category;
@@ -46,6 +48,8 @@ public class BidoofMeteor extends MeteorAddon {
         BidoofStarscript.init();
 
         //add(new Logger Module - Saves important information on certain events such as death in the logs.());
+        GuiThemes.add( new DarkPurpleTheme() );
+
         //add(new Announcer Module - Re-added the removed Announcer module from Meteor Client.());
         //add(new SpamPlus Module - Spam the bee movie script.());
         //add(new Command Substituter Module - Automatically replaces commands sent with different commands.());
@@ -60,6 +64,7 @@ public class BidoofMeteor extends MeteorAddon {
         //add(new Player Head Cache - Keep player heads in chat even after the player has left. Part of BetterChat());
         //add(new Anvil Tooltip Info - Anvil-related info, xp cost & anvil uses, of items in the tooltip. Part of BetterTooltips());
         //add(new Disables DiscordPresence by default.());
+        //add(new Dark Purple Theme.());
 	}
 
 	@Override
