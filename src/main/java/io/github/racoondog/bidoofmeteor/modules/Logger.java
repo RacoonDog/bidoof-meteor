@@ -4,6 +4,7 @@ import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.Utils;
@@ -45,6 +46,7 @@ public class Logger extends Module {
         .defaultValue("Teleport detected; Server: {server}, Position: {player.pos}")
         .onChanged(s -> recompileTeleport())
         .visible(teleport::get)
+        .renderer(StarscriptTextBoxRenderer.class)
         .build()
     );
 
@@ -67,6 +69,7 @@ public class Logger extends Module {
         .defaultValue("Disconnect detected; Server: {server}, Position: {player.pos}")
         .onChanged(s -> recompileDisconnect())
         .visible(disconnect::get)
+        .renderer(StarscriptTextBoxRenderer.class)
         .build()
     );
 
@@ -82,6 +85,7 @@ public class Logger extends Module {
         .defaultValue("Death detected; Server: {server}, Position: {player.pos}")
         .onChanged(s -> recompileDeath())
         .visible(death::get)
+        .renderer(StarscriptTextBoxRenderer.class)
         .build()
     );
 

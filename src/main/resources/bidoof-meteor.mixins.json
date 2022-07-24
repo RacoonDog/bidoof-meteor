@@ -13,7 +13,6 @@
     "StringReaderMixin",
     "meteor.BetterChatMixin",
     "meteor.BetterTooltipsMixin",
-    "meteor.DiscordPresenceMixin",
     "meteor.GuiThemeMixin",
     "meteor.MeteorClientMixin",
     "meteor.MeteorGuiThemeMixin"

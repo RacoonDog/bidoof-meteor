@@ -25,8 +25,25 @@ public class DarkPurpleTheme extends MeteorGuiTheme implements IRecolorGuiTheme 
     }
 
     @Override
+    public SettingColor getPlusColor() {
+        return new SettingColor(37, 173, 107);
+    }
+
+    @Override
+    public SettingColor getMinusColor() {
+        return new SettingColor(198, 58, 93);
+    }
+
+    @Override
     public SettingColor getFavoriteColor() {
         return new SettingColor(84, 48, 115);
+    }
+
+    // Text
+
+    @Override
+    public SettingColor getTextSecondaryColor() {
+        return new SettingColor(164, 161, 179);
     }
 
     // Background

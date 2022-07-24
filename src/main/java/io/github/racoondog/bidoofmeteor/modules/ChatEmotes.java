@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 public class ChatEmotes extends Module {
     private final SettingGroup sgGeneral = this.settings.getDefaultGroup();
 
-    private final SettingGroup sgEmoteGroups = this.settings.createGroup("emote-groups");
+    private final SettingGroup sgEmoteGroups = this.settings.createGroup("Emote Groups");
 
     private final Setting<Boolean> outgoing = sgGeneral.add(new BoolSetting.Builder()
         .name("outgoing")
