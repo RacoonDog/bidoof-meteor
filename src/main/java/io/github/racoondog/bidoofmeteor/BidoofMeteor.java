@@ -22,7 +22,7 @@ import net.minecraft.item.Items;
 @Environment(EnvType.CLIENT)
 public class BidoofMeteor extends MeteorAddon {
     public static final org.slf4j.Logger LOG = LogUtils.getLogger();
-	public static final Category CATEGORY = new Category("Bidoof", new ItemStack(Items.AMETHYST_SHARD));
+	public static final Category CATEGORY = new Category("Bidoof", Items.AMETHYST_SHARD.getDefaultStack());
     public static BidoofMeteor INSTANCE;
 
 	@Override
@@ -42,11 +42,10 @@ public class BidoofMeteor extends MeteorAddon {
         Commands.get().add( new BidoofCommand() );
 
         Hud.get().register(ImageHudPresets.INFO);
-        TextHudPresets.init();
-
-        BidoofStarscript.init();
 
         GuiThemes.add( new DarkPurpleTheme() );
+
+        DiscordPresence.registerCustomState("com.wildfire.gui.screen", "Changing options");
 
         //add(new Logger Module - Saves important information on certain events such as death in the logs, configurable via Starscript.());
         //add(new Announcer Module - Re-added the removed Announcer module from Meteor Client.());
@@ -64,8 +63,6 @@ public class BidoofMeteor extends MeteorAddon {
         //add(new Anvil Tooltip Info - Anvil-related info, xp cost & anvil uses, of items in the tooltip. Part of BetterTooltips());
         //add(new Disables DiscordPresence by default.());
         //add(new Dark Purple Theme.());
-
-        DiscordPresence.registerCustomState("com.wildfire.gui.screen", "Changing options");
 	}
 
 	@Override

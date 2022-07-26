@@ -1,5 +1,9 @@
 package io.github.racoondog.bidoofmeteor;
 
+import io.github.racoondog.bidoofmeteor.util.Constants;
+import meteordevelopment.meteorclient.utils.PostInit;
+import meteordevelopment.meteorclient.utils.PreInit;
+import meteordevelopment.starscript.Starscript;
 import meteordevelopment.starscript.value.Value;
 import meteordevelopment.starscript.value.ValueMap;
 import net.fabricmc.api.EnvType;
@@ -19,6 +23,7 @@ public class BidoofStarscript {
     public static double fakeY = genRandom(10, 20);
     public static double fakeZ = genRandom(10000000, 20000000);
 
+    @PreInit
     public static void init() {
         ss.set("bidoof", Value.map(new ValueMap()
             .set("_toString", () -> Value.string("boof"))
@@ -27,6 +32,18 @@ public class BidoofStarscript {
             .set("fake_y", () -> Value.number(mc.player != null ? fakeY + mc.player.getY() : fakeY))
             .set("fake_z", () -> Value.number(mc.player != null ? fakeZ + mc.player.getZ() : fakeZ))
         ));
+
+        ss.set("fancy", BidoofStarscript::fancy);
+    }
+
+    public static Value fancy(Starscript ss, int argCount) {
+        if (argCount != 1) ss.error("fancy() requires 1 argument, got %d.", argCount);
+        String a = ss.popString("Argument to fancy() needs to be a string.");
+        StringBuilder sb = new StringBuilder();
+        for (char ch : a.toCharArray()) {
+            sb.append(Constants.FANCY.getOrDefault(ch, ch));
+        }
+        return Value.string(sb.toString());
     }
 
     private static double genRandom(int min, int max) {
