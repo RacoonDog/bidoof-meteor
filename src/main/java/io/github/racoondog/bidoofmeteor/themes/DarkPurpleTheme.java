@@ -50,7 +50,12 @@ public class DarkPurpleTheme extends MeteorGuiTheme implements IRecolorGuiTheme 
 
     @Override
     public TriColorSetting getBackgroundColor() {
-        return new TriColorSetting(new SettingColor(44, 44, 59), new SettingColor(84, 48, 115), new SettingColor(84, 48, 115));
+        return new TriColorSetting(new SettingColor(44, 44, 59, 200), new SettingColor(84, 48, 115, 200), new SettingColor(84, 48, 115, 200));
+    }
+
+    @Override
+    public SettingColor getModuleBackground() {
+        return new SettingColor(84, 48, 115);
     }
 
     // Outline
@@ -69,14 +74,14 @@ public class DarkPurpleTheme extends MeteorGuiTheme implements IRecolorGuiTheme 
 
     @Override
     public SettingColor getSeparatorEdges() {
-        return new SettingColor(102, 99, 128);
+        return new SettingColor(102, 99, 128, 150);
     }
 
     // Scrollbar
 
     @Override
     public TriColorSetting getScrollbarColor() {
-        return new TriColorSetting(new SettingColor(69, 69, 75), new SettingColor(74, 74, 80), new SettingColor(79, 79, 85));
+        return new TriColorSetting(new SettingColor(69, 69, 75, 200), new SettingColor(74, 74, 80, 200), new SettingColor(79, 79, 85, 200));
     }
 
     // Slider

@@ -7,7 +7,6 @@
   },
   "client": [
     "ChatHudMixin",
-    "ClientPlayerEntityMixin",
     "ClientPlayNetworkHandlerMixin",
     "Renderer2DMixin",
     "StringReaderMixin",

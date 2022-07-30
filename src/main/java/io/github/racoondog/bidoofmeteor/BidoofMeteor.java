@@ -32,7 +32,6 @@ public class BidoofMeteor extends MeteorAddon {
         Modules.get().add( new Announcer() );
         Modules.get().add( new FishyDetector() );
         Modules.get().add( new SpamPlus() );
-        Modules.get().add( new CommandSubstituter() );
         Modules.get().add( new ChatCommands() );
         Modules.get().add( new AutoTpa() );
         Modules.get().add( new ChatEmotes() );
@@ -48,7 +47,6 @@ public class BidoofMeteor extends MeteorAddon {
         //add(new Logger Module - Saves important information on certain events such as death in the logs, configurable via Starscript.());
         //add(new Announcer Module - Re-added the removed Announcer module from Meteor Client.());
         //add(new SpamPlus Module - Spam the bee movie script.());
-        //add(new Command Substituter Module - Automatically replaces commands sent with different commands.());
         //add(new Chat Commands Module - Turn your account into a Discord bot.());
         //add(new Auto TPA Module - Automatically accept TPA requests based on a whitelist.());
         //add(new Chat Emotes Module - Discord emotes for Minecraft, vanilla compatible.());
