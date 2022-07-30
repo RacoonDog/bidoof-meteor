@@ -8,6 +8,7 @@ import meteordevelopment.meteorclient.settings.IntSetting;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -55,8 +56,7 @@ public class SpamPlus extends Module {
         if (timer <= 0) {
             String line = "";
             if (text.get().equals(Text.BeeMovie)) line = BEE_MOVIE.get(messageI);
-            assert mc.player != null;
-            mc.player.sendChatMessage(line, null);
+            ChatUtils.sendPlayerMsg(line);
             timer = delay.get();
             if ((text.get().equals(Text.BeeMovie) && messageI++ == BEE_MOVIE.size() - 1)) {
                 messageI = 0;

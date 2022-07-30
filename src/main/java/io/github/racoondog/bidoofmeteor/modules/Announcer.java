@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -164,7 +165,7 @@ public class Announcer extends Module {
         }
 
         void sendMsg() {
-            mc.player.sendChatMessage(msg.get().replace("{dist}", String.format("%.1f", dist)), null);
+            ChatUtils.sendPlayerMsg(msg.get().replace("{dist}", String.format("%.1f", dist)));
         }
     }
 
@@ -215,7 +216,7 @@ public class Announcer extends Module {
 
         void sendMsg() {
             if (count > 0) {
-                mc.player.sendChatMessage(msg.get().replace("{count}", Integer.toString(count)).replace("{block}", lastBlock.getName().getString()), null);
+                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{block}", lastBlock.getName().getString()));
                 count = 0;
             }
         }
@@ -266,7 +267,7 @@ public class Announcer extends Module {
 
         void sendMsg() {
             if (count > 0) {
-                mc.player.sendChatMessage(msg.get().replace("{count}", Integer.toString(count)).replace("{block}", lastBlock.getName().getString()), null);
+                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{block}", lastBlock.getName().getString()));
                 count = 0;
             }
         }
@@ -317,7 +318,7 @@ public class Announcer extends Module {
 
         void sendMsg() {
             if (count > 0) {
-                mc.player.sendChatMessage(msg.get().replace("{count}", Integer.toString(count)).replace("{item}", lastItem.getName().getString()), null);
+                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{item}", lastItem.getName().getString()));
                 count = 0;
             }
         }
@@ -368,7 +369,7 @@ public class Announcer extends Module {
 
         void sendMsg() {
             if (count > 0) {
-                mc.player.sendChatMessage(msg.get().replace("{count}", Integer.toString(count)).replace("{item}", lastItem.getName().getString()), null);
+                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{item}", lastItem.getName().getString()));
                 count = 0;
             }
         }

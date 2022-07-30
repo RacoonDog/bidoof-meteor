@@ -88,8 +88,4 @@ public class ChatUtils {
         if (mc.world == null) return;
         ((IChatHud) mc.inGameHud.getChatHud()).add(Text.empty(), 0);
     }
-
-    public static void say(String message) {
-        if (mc.player != null) mc.player.sendChatMessage(message, null);
-    }
 }
