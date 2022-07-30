@@ -22,7 +22,7 @@ public class FishyDetectorImpl {
         ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
             List<String> names = new ArrayList<>();
             for (var entry : list) {
-                String name = new PlayerListEntry(entry, mc.getServicesSignatureVerifier()).getProfile().getName();
+                String name = new PlayerListEntry(entry, mc.getServicesSignatureVerifier(), false).getProfile().getName();
                 if (name.contains(".")) {
                     ChatUtils.info("New player detected: (highlight)%s(default), (highlight)%s (default)is not a valid in-use player name", name, name);
                     continue;
@@ -31,7 +31,7 @@ public class FishyDetectorImpl {
             }
             List<Pair<String, String>> pairList = ApiUtils.uuidsFromNames(names);
             for (var entry : list) {
-                GameProfile profile = new PlayerListEntry(entry, mc.getServicesSignatureVerifier()).getProfile();
+                GameProfile profile = new PlayerListEntry(entry, mc.getServicesSignatureVerifier(), false).getProfile();
                 String username = profile.getName();
                 assert mc.getNetworkHandler() != null;
                 if (username == null || username.equals(previousName) || username.equals(mc.getNetworkHandler().getProfile().getName())) return;

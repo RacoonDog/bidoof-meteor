@@ -4,6 +4,7 @@ import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.addons.AddonManager;
 import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
+import meteordevelopment.meteorclient.mixininterface.IChatHud;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -70,7 +71,7 @@ public class ChatUtils {
         message.append(PREFIX);
         message.append(msg);
 
-        ((ChatHudAccessor) mc.inGameHud.getChatHud()).add(message, 0);
+        ((IChatHud) mc.inGameHud.getChatHud()).add(message, 0);
     }
 
     private static String formatMsg(String format, Formatting defaultColor, Object... args) {
@@ -85,10 +86,10 @@ public class ChatUtils {
 
     public static void empty() {
         if (mc.world == null) return;
-        ((ChatHudAccessor) mc.inGameHud.getChatHud()).add(Text.empty(), 0);
+        ((IChatHud) mc.inGameHud.getChatHud()).add(Text.empty(), 0);
     }
 
     public static void say(String message) {
-        if (mc.player != null) mc.player.sendChatMessage(message);
+        if (mc.player != null) mc.player.sendChatMessage(message, null);
     }
 }

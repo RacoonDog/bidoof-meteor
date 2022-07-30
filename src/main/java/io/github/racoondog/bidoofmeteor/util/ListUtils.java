@@ -5,7 +5,11 @@ import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class ListUtils {
@@ -18,5 +22,13 @@ public class ListUtils {
             );
         }
         return parts;
+    }
+
+    public static <T> String commaSeparatedList(Collection<T> list) {
+        return list.stream().map(Objects::toString).collect(Collectors.joining(", "));
+    }
+
+    public static <T> String commaSeparatedList(Collection<T> list, Function<? super T, String> mapper) {
+        return list.stream().map(mapper).collect(Collectors.joining(", "));
     }
 }

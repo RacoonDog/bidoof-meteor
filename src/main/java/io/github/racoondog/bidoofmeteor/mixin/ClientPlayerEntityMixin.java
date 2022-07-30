@@ -7,18 +7,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin {
-    @ModifyArg(method = "sendCommand(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;sendCommand(Lnet/minecraft/network/message/ChatMessageSigner;Ljava/lang/String;Lnet/minecraft/text/Text;)V"), index = 1)
-    private String modifyArg(String command) {
-        if (!Modules.get().get(CommandSubstituter.class).isActive()) return command;
+    @Inject(method = "sendCommand(Ljava/lang/String;)Z", at = @At("HEAD"))
+    private void modifyArg(String command, CallbackInfoReturnable<Boolean> cir) {
+        if (!Modules.get().get(CommandSubstituter.class).isActive()) return;
         int idx = command.indexOf(' ');
-        if (idx == -1) return command;
+        if (idx == -1) return;
         String str = command.substring(0, idx);
         str = Modules.get().get(CommandSubstituter.class).commandSubstitutions.getOrDefault(str, str);
-        return str + command.substring(idx);
+        command =  str + command.substring(idx);
     }
 }

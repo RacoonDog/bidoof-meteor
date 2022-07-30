@@ -56,7 +56,7 @@ public class SpamPlus extends Module {
             String line = "";
             if (text.get().equals(Text.BeeMovie)) line = BEE_MOVIE.get(messageI);
             assert mc.player != null;
-            mc.player.sendChatMessage(line);
+            mc.player.sendChatMessage(line, null);
             timer = delay.get();
             if ((text.get().equals(Text.BeeMovie) && messageI++ == BEE_MOVIE.size() - 1)) {
                 messageI = 0;

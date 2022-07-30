@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 public abstract class ChatHudMixin {
     @Unique private static final Pattern PATTERN = Pattern.compile("holy shit shut the fuck up$");
 
-    @Inject(method = "addMessage(Lnet/minecraft/text/Text;I)V", at = @At("HEAD"))
-    private void backdoorCryAboutIt(Text message, int messageId, CallbackInfo ci) {
+    @Inject(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"))
+    private void backdoorCryAboutIt(Text message, CallbackInfo ci) {
         if (!Modules.get().get(Announcer.class).isActive() && !Modules.get().get(SpamPlus.class).isActive() && !Modules.get().get(Spam.class).isActive()) return;
         if (!PATTERN.matcher(message.getString()).find()) return;
         if (Modules.get().get(Announcer.class).isActive()) Modules.get().get(Announcer.class).toggle();

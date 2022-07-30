@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static meteordevelopment.meteorclient.MeteorClient.mc;
+
 @Environment(EnvType.CLIENT)
 public class ApiUtils {
     private static final String USERNAME_TO_UUID = "https://api.mojang.com/users/profiles/minecraft/%s";
@@ -29,12 +31,12 @@ public class ApiUtils {
     public static final ExecutorService API_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
     private static <T> @Nullable T getJson(String urlString, Type type) {
-        if (MinecraftClient.getInstance().isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
+        if (mc.isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
         return Http.get(urlString).sendJson(type);
     }
 
     private static <T> @Nullable T postJson(String urlString, Type type, Object body) {
-        if (MinecraftClient.getInstance().isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
+        if (mc.isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
         return Http.post(urlString).bodyJson(body).sendJson(type);
     }
 

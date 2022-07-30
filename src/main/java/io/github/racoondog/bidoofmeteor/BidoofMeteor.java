@@ -3,7 +3,6 @@ package io.github.racoondog.bidoofmeteor;
 import com.mojang.logging.LogUtils;
 import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
 import io.github.racoondog.bidoofmeteor.hud.ImageHudPresets;
-import io.github.racoondog.bidoofmeteor.hud.TextHudPresets;
 import io.github.racoondog.bidoofmeteor.modules.*;
 import io.github.racoondog.bidoofmeteor.themes.DarkPurpleTheme;
 import meteordevelopment.meteorclient.addons.GithubRepo;
@@ -16,7 +15,6 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.DiscordPresence;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 @Environment(EnvType.CLIENT)
