@@ -26,6 +26,7 @@ public final class StarscriptUtils {
         try {
             return MeteorStarscript.ss.run(script).toString();
         } catch (StarscriptError error) {
+            MeteorStarscript.printChatError(error);
             return error.getMessage();
         }
     }

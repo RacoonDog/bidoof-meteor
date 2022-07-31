@@ -183,7 +183,7 @@ public class Announcer extends Module {
             try {
                 ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[dist]", String.format("%.1f", dist)));
             } catch (StarscriptError error) {
-                io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                MeteorStarscript.printChatError(error);
             }
         }
     }
@@ -248,7 +248,7 @@ public class Announcer extends Module {
                 try {
                     ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[block]", lastBlock.getName().getString()));
                 } catch (StarscriptError error) {
-                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                    MeteorStarscript.printChatError(error);
                 }
                 count = 0;
             }
@@ -313,7 +313,7 @@ public class Announcer extends Module {
                 try {
                     ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[block]", lastBlock.getName().getString()));
                 } catch (StarscriptError error) {
-                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                    MeteorStarscript.printChatError(error);
                 }
                 count = 0;
             }
@@ -378,7 +378,7 @@ public class Announcer extends Module {
                 try {
                     ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[item]", lastItem.getName().getString()));
                 } catch (StarscriptError error) {
-                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                    MeteorStarscript.printChatError(error);
                 }
                 count = 0;
             }
@@ -443,7 +443,7 @@ public class Announcer extends Module {
                 try {
                     ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[item]", lastItem.getName().getString()));
                 } catch (StarscriptError error) {
-                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                    MeteorStarscript.printChatError(error);
                 }
                 count = 0;
             }
@@ -491,7 +491,7 @@ public class Announcer extends Module {
             try {
                 ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[name]", name));
             } catch (StarscriptError error) {
-                io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                MeteorStarscript.printChatError(error);
             }
         }
     }
