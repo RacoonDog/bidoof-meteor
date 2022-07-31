@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
-public class ListUtils {
+public final class ListUtils {
     public static <T> @NotNull List<List<T>> partition(List<T> list, final int size) {
         List<List<T>> parts = new ArrayList<>();
         final int items = list.size();

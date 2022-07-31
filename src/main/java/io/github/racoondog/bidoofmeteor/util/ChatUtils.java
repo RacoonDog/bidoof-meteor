@@ -19,7 +19,7 @@ import net.minecraft.util.Formatting;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(EnvType.CLIENT)
-public class ChatUtils {
+public final class ChatUtils {
     private static final Text PREFIX = Text.literal("")
         .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
         .append("[")

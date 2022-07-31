@@ -1,6 +1,8 @@
 package io.github.racoondog.bidoofmeteor.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
+import io.github.racoondog.bidoofmeteor.util.Constants;
+import io.github.racoondog.bidoofmeteor.util.StarscriptUtils;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.entity.DropItemsEvent;
 import meteordevelopment.meteorclient.events.entity.player.BreakBlockEvent;
@@ -8,21 +10,22 @@ import meteordevelopment.meteorclient.events.entity.player.PickItemsEvent;
 import meteordevelopment.meteorclient.events.entity.player.PlaceBlockEvent;
 import meteordevelopment.meteorclient.events.game.OpenScreenEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
+import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
+import meteordevelopment.starscript.Script;
+import meteordevelopment.starscript.utils.StarscriptError;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.Item;
 
-//Skidded from meteor, blow me
 @Environment(EnvType.CLIENT)
 public class Announcer extends Module {
-    private static final float TICK = 1.0f / 20.0f;
-
     private final Feature[] features = {
         new Moving(),
         new Mining(),
@@ -86,9 +89,9 @@ public class Announcer extends Module {
             );
         }
 
-        abstract void reset();
+        protected abstract void reset();
 
-        abstract void tick();
+        protected abstract void tick();
 
         boolean isEnabled() {
             return enabled.get();
@@ -99,7 +102,10 @@ public class Announcer extends Module {
         private final Setting<String> msg = sg.add(new StringSetting.Builder()
             .name("moving-msg")
             .description("The chat message for moving a certain amount of blocks.")
-            .defaultValue("I just moved {dist} blocks!")
+            .defaultValue("I just moved [dist] blocks!")
+            .visible(this::isEnabled)
+            .onChanged(e -> compile())
+            .renderer(StarscriptTextBoxRenderer.class)
             .build()
         );
 
@@ -108,6 +114,7 @@ public class Announcer extends Module {
             .description("The amount of delay between moving messages in seconds.")
             .defaultValue(10)
             .sliderMax(60)
+            .visible(this::isEnabled)
             .build()
         );
 
@@ -116,26 +123,29 @@ public class Announcer extends Module {
             .description("The minimum distance for a moving message to send into chat.")
             .defaultValue(10)
             .sliderMax(100)
+            .visible(this::isEnabled)
             .build()
         );
 
         private double dist, timer;
         private double lastX, lastZ;
         private boolean first;
+        private Script script;
 
         Moving() {
             super("Moving", "moving-enabled", "Send msg how much you moved.");
+            compile();
         }
 
         @Override
-        void reset() {
+        protected void reset() {
             dist = 0;
             timer = 0;
             first = true;
         }
 
         @Override
-        void tick() {
+        protected void tick() {
             if (first) {
                 first = false;
                 updateLastPos();
@@ -153,19 +163,28 @@ public class Announcer extends Module {
                     dist = 0;
                 }
             } else {
-                timer += TICK;
+                timer += Constants.TICK;
             }
 
             updateLastPos();
         }
 
-        void updateLastPos() {
+        private void compile() {
+            script = StarscriptUtils.compile(msg.get());
+        }
+
+        private void updateLastPos() {
             lastX = mc.player.getX();
             lastZ = mc.player.getZ();
         }
 
-        void sendMsg() {
-            ChatUtils.sendPlayerMsg(msg.get().replace("{dist}", String.format("%.1f", dist)));
+        private void sendMsg() {
+            if (script == null) return;
+            try {
+                ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[dist]", String.format("%.1f", dist)));
+            } catch (StarscriptError error) {
+                io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+            }
         }
     }
 
@@ -173,20 +192,25 @@ public class Announcer extends Module {
         private final Setting<String> msg = sg.add(new StringSetting.Builder()
             .name("mining-msg")
             .description("The chat message for mining blocks.")
-            .defaultValue("I just mined {count} {block}!")
+            .defaultValue("I just mined [count] [block]!")
+            .visible(this::isEnabled)
+            .onChanged(e -> compile())
+            .renderer(StarscriptTextBoxRenderer.class)
             .build()
         );
 
         private Block lastBlock;
         private int count;
         private double notBrokenTimer;
+        private Script script;
 
         Mining() {
             super("Mining", "mining-enabled", "Send msg how much blocks you mined.");
+            compile();
         }
 
         @Override
-        void reset() {
+        protected void reset() {
             lastBlock = null;
             count = 0;
             notBrokenTimer = 0;
@@ -206,17 +230,26 @@ public class Announcer extends Module {
         }
 
         @Override
-        void tick() {
+        protected void tick() {
             if (notBrokenTimer >= 2) {
                 sendMsg();
             } else {
-                notBrokenTimer += TICK;
+                notBrokenTimer += Constants.TICK;
             }
         }
 
-        void sendMsg() {
+        private void compile() {
+            script = StarscriptUtils.compile(msg.get());
+        }
+
+        private void sendMsg() {
+            if (script == null) return;
             if (count > 0) {
-                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{block}", lastBlock.getName().getString()));
+                try {
+                    ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[block]", lastBlock.getName().getString()));
+                } catch (StarscriptError error) {
+                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                }
                 count = 0;
             }
         }
@@ -226,20 +259,25 @@ public class Announcer extends Module {
         private final Setting<String> msg = sg.add(new StringSetting.Builder()
             .name("placing-msg")
             .description("The chat message for placing blocks.")
-            .defaultValue("I just placed {count} {block}!")
+            .defaultValue("I just placed [count] [block]!")
+            .visible(this::isEnabled)
+            .onChanged(e -> compile())
+            .renderer(StarscriptTextBoxRenderer.class)
             .build()
         );
 
         private Block lastBlock;
         private int count;
         private double notPlacedTimer;
+        private Script script;
 
         Placing() {
             super("Placing", "placing-enabled", "Send msg how much blocks you placed.");
+            compile();
         }
 
         @Override
-        void reset() {
+        protected void reset() {
             lastBlock = null;
             count = 0;
             notPlacedTimer = 0;
@@ -257,17 +295,26 @@ public class Announcer extends Module {
         }
 
         @Override
-        void tick() {
+        protected void tick() {
             if (notPlacedTimer >= 2) {
                 sendMsg();
             } else {
-                notPlacedTimer += TICK;
+                notPlacedTimer += Constants.TICK;
             }
         }
 
-        void sendMsg() {
+        private void compile() {
+            script = StarscriptUtils.compile(msg.get());
+        }
+
+        private void sendMsg() {
+            if (script == null) return;
             if (count > 0) {
-                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{block}", lastBlock.getName().getString()));
+                try {
+                    ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[block]", lastBlock.getName().getString()));
+                } catch (StarscriptError error) {
+                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                }
                 count = 0;
             }
         }
@@ -277,20 +324,25 @@ public class Announcer extends Module {
         private final Setting<String> msg = sg.add(new StringSetting.Builder()
             .name("drop-items-msg")
             .description("The chat message for dropping items.")
-            .defaultValue("I just dropped {count} {item}!")
+            .defaultValue("I just dropped [count] [item]!")
+            .visible(this::isEnabled)
+            .onChanged(e -> compile())
+            .renderer(StarscriptTextBoxRenderer.class)
             .build()
         );
 
         private Item lastItem;
         private int count;
         private double notDroppedTimer;
+        private Script script;
 
         DropItems() {
             super("Drop Items", "drop-items-enabled", "Send msg how much items you dropped.");
+            compile();
         }
 
         @Override
-        void reset() {
+        protected void reset() {
             lastItem = null;
             count = 0;
             notDroppedTimer = 0;
@@ -308,17 +360,26 @@ public class Announcer extends Module {
         }
 
         @Override
-        void tick() {
+        protected void tick() {
             if (notDroppedTimer >= 1) {
                 sendMsg();
             } else {
-                notDroppedTimer += TICK;
+                notDroppedTimer += Constants.TICK;
             }
         }
 
-        void sendMsg() {
+        private void compile() {
+            script = StarscriptUtils.compile(msg.get());
+        }
+
+        private void sendMsg() {
+            if (script == null) return;
             if (count > 0) {
-                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{item}", lastItem.getName().getString()));
+                try {
+                    ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[item]", lastItem.getName().getString()));
+                } catch (StarscriptError error) {
+                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                }
                 count = 0;
             }
         }
@@ -328,20 +389,25 @@ public class Announcer extends Module {
         private final Setting<String> msg = sg.add(new StringSetting.Builder()
             .name("pick-items-msg")
             .description("The chat message for picking up items.")
-            .defaultValue("I just picked up {count} {item}!")
+            .defaultValue("I just picked up [count] [item]!")
+            .visible(this::isEnabled)
+            .onChanged(e -> compile())
+            .renderer(StarscriptTextBoxRenderer.class)
             .build()
         );
 
         private Item lastItem;
         private int count;
         private double notPickedUpTimer;
+        private Script script;
 
         PickItems() {
             super("Pick Items", "pick-items-enabled", "Send msg how much items you pick up.");
+            compile();
         }
 
         @Override
-        void reset() {
+        protected void reset() {
             lastItem = null;
             count = 0;
             notPickedUpTimer = 0;
@@ -359,17 +425,26 @@ public class Announcer extends Module {
         }
 
         @Override
-        void tick() {
+        protected void tick() {
             if (notPickedUpTimer >= 1) {
                 sendMsg();
             } else {
-                notPickedUpTimer += TICK;
+                notPickedUpTimer += Constants.TICK;
             }
         }
 
-        void sendMsg() {
+        private void compile() {
+            script = StarscriptUtils.compile(msg.get());
+        }
+
+        private void sendMsg() {
+            if (script == null) return;
             if (count > 0) {
-                ChatUtils.sendPlayerMsg(msg.get().replace("{count}", Integer.toString(count)).replace("{item}", lastItem.getName().getString()));
+                try {
+                    ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[count]", Integer.toString(count)).replace("[item]", lastItem.getName().getString()));
+                } catch (StarscriptError error) {
+                    io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+                }
                 count = 0;
             }
         }
@@ -379,19 +454,25 @@ public class Announcer extends Module {
         private final Setting<String> msg = sg.add(new StringSetting.Builder()
             .name("open-container-msg")
             .description("The chat message for opening a container.")
-            .defaultValue("I just opened {name}!")
+            .defaultValue("I just opened [name]!")
+            .visible(this::isEnabled)
+            .onChanged(e -> compile())
+            .renderer(StarscriptTextBoxRenderer.class)
             .build()
         );
 
+        private Script script;
+
         public OpenContainer() {
             super("Open Container", "open-container-enabled", "Sends msg when you open containers.");
+            compile();
         }
 
         @Override
-        void reset() {}
+        protected void reset() {}
 
         @Override
-        void tick() {}
+        protected void tick() {}
 
         @EventHandler
         private void onOpenScreen(OpenScreenEvent event) {
@@ -401,8 +482,17 @@ public class Announcer extends Module {
             }
         }
 
+        private void compile() {
+            script = StarscriptUtils.compile(msg.get());
+        }
+
         void sendMsg(String name) {
-            mc.player.sendChatMessage(msg.get().replace("{name}", name), null);
+            if (script == null) return;
+            try {
+                ChatUtils.sendPlayerMsg(MeteorStarscript.ss.run(script).toString().replace("[name]", name));
+            } catch (StarscriptError error) {
+                io.github.racoondog.bidoofmeteor.util.ChatUtils.error(error.getMessage());
+            }
         }
     }
 }

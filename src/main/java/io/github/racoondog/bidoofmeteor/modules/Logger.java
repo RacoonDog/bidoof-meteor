@@ -2,6 +2,7 @@ package io.github.racoondog.bidoofmeteor.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
+import io.github.racoondog.bidoofmeteor.util.StarscriptUtils;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
@@ -109,30 +110,17 @@ public class Logger extends Module {
         super(BidoofMeteor.CATEGORY, "logger", "Outputs a message when certain events happen.");
     }
 
-    private Script recompile(String message) {
-        Parser.Result result = Parser.parse(message);
-
-        if (result.hasErrors() && Utils.canUpdate()) {
-            if (Utils.canUpdate()) {
-                MeteorStarscript.printChatError(result.errors.get(0));
-            }
-            return null;
-        }
-
-        return Compiler.compile(result);
-    }
-
     private void recompileTeleport() {
-        this.teleportScript = recompile(this.teleportMessage.get());
+        this.teleportScript = StarscriptUtils.compile(this.teleportMessage.get());
         this.forceUpdate = true;
     }
 
     private void recompileDisconnect() {
-        this.disconnectScript = recompile(this.disconnectMessage.get());
+        this.disconnectScript = StarscriptUtils.compile(this.disconnectMessage.get());
     }
 
     private void recompileDeath() {
-        this.deathScript = recompile(this.deathMessage.get());
+        this.deathScript = StarscriptUtils.compile(this.deathMessage.get());
     }
 
     private static int distance(BlockPos one, BlockPos two) {
@@ -148,45 +136,46 @@ public class Logger extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         //Teleport
-        if (!this.teleport.get() || !this.isActive()) return;
+        if (!this.isActive() || mc.player == null) return;
 
-        assert mc.player != null;
-        if (this.tickCounter >= 20 || this.forceUpdate) {
-            assert mc.player.getBlockPos() != null;
-            int minDistance = this.minimumDistance.get(); //comparing squared values is faster
-            if (this.pos != null && distance(this.pos, mc.player.getBlockPos()) >= (minDistance * minDistance)) {
-
-                String output = MeteorStarscript.ss.run(this.teleportScript).toString();
-                if (this.teleportChatOutput.get()) {
-                    ChatUtils.info(output);
+        if (this.teleport.get() && mc.player.getBlockPos() != null && this.teleportScript != null) {
+            if (this.tickCounter >= 20 || this.forceUpdate) {
+                int minDistance = this.minimumDistance.get(); //comparing squared values is faster
+                if (this.pos != null && distance(this.pos, mc.player.getBlockPos()) >= (minDistance * minDistance)) {
+                    String output = StarscriptUtils.run(this.teleportScript);
+                    if (this.teleportChatOutput.get()) {
+                        ChatUtils.info(output);
+                    }
+                    LOG.info(output);
                 }
-                LOG.info(output);
+                this.pos = copy(mc.player.getBlockPos());
+                this.tickCounter = 0;
             }
-            this.pos = copy(mc.player.getBlockPos());
-            this.tickCounter = 0;
+            this.tickCounter++;
+            this.forceUpdate = false;
         }
-        this.tickCounter++;
-        this.forceUpdate = false;
+
 
         //Death
-        if (!this.death.get()) return;
 
-        if (mc.player.getHealth() <= 0.0f) {
-            if (!this.deathLogged) {
-                this.deathLogged = true;
-                String output = MeteorStarscript.ss.run(this.deathScript).toString();
-                if (this.deathChatOutput.get()) ChatUtils.info(output);
-                LOG.info(output);
+        if (this.death.get() && this.deathScript != null) {
+            if (mc.player.getHealth() <= 0.0f) {
+                if (!this.deathLogged) {
+                    this.deathLogged = true;
+                    String output = StarscriptUtils.run(this.deathScript);
+                    if (this.deathChatOutput.get()) ChatUtils.info(output);
+                    LOG.info(output);
+                }
+            } else {
+                this.deathLogged = false;
             }
-        } else {
-            this.deathLogged = false;
         }
     }
 
     @EventHandler
     private void onDisconnect(GameLeftEvent event) {
-        if (!this.disconnect.get() || !this.isActive()) return;
+        if (!this.disconnect.get() || !this.isActive() || this.disconnectScript == null) return;
 
-        LOG.info(MeteorStarscript.ss.run(this.disconnectScript).toString());
+        LOG.info(StarscriptUtils.run(this.disconnectScript));
     }
 }

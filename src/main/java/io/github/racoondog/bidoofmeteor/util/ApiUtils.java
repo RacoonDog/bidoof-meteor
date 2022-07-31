@@ -6,7 +6,6 @@ import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import meteordevelopment.meteorclient.utils.network.Http;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +21,7 @@ import java.util.concurrent.Executors;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(EnvType.CLIENT)
-public class ApiUtils {
+public final class ApiUtils {
     private static final String USERNAME_TO_UUID = "https://api.mojang.com/users/profiles/minecraft/%s";
     private static final String USERNAMES_TO_UUIDS = "https://api.mojang.com/profiles/minecraft";
     private static final String UUID_TO_NAME_HISTORY = "https://api.mojang.com/user/profiles/%s/names";
