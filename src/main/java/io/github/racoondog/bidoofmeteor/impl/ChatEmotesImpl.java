@@ -11,7 +11,7 @@ public class ChatEmotesImpl {
         return emoteReplacer(msg, 0);
     }
 
-    //Miraculously much better performance than msg.replace()
+    //This is horrible
     private static String emoteReplacer(String msg, int start) {
         int idx = msg.indexOf(':', start);
         if (idx < 0) return msg;

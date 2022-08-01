@@ -5,7 +5,6 @@ import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.starscript.Script;
 import meteordevelopment.starscript.compiler.Compiler;
 import meteordevelopment.starscript.compiler.Parser;
-import meteordevelopment.starscript.utils.StarscriptError;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -20,14 +19,5 @@ public final class StarscriptUtils {
         }
 
         return Compiler.compile(result);
-    }
-
-    public static String run(Script script) {
-        try {
-            return MeteorStarscript.ss.run(script).toString();
-        } catch (StarscriptError error) {
-            MeteorStarscript.printChatError(error);
-            return error.getMessage();
-        }
     }
 }

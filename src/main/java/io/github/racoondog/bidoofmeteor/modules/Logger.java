@@ -8,12 +8,9 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.utils.StarscriptTextBoxRenderer;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.starscript.Script;
-import meteordevelopment.starscript.compiler.Compiler;
-import meteordevelopment.starscript.compiler.Parser;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
@@ -136,17 +133,19 @@ public class Logger extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         //Teleport
-        if (!this.isActive() || mc.player == null) return;
+        if (mc.player == null) return;
 
         if (this.teleport.get() && mc.player.getBlockPos() != null && this.teleportScript != null) {
             if (this.tickCounter >= 20 || this.forceUpdate) {
                 int minDistance = this.minimumDistance.get(); //comparing squared values is faster
                 if (this.pos != null && distance(this.pos, mc.player.getBlockPos()) >= (minDistance * minDistance)) {
-                    String output = StarscriptUtils.run(this.teleportScript);
-                    if (this.teleportChatOutput.get()) {
-                        ChatUtils.info(output);
+                    String output = MeteorStarscript.run(this.teleportScript);
+                    if (output != null) {
+                        if (this.teleportChatOutput.get()) {
+                            ChatUtils.info(output);
+                        }
+                        LOG.info(output);
                     }
-                    LOG.info(output);
                 }
                 this.pos = copy(mc.player.getBlockPos());
                 this.tickCounter = 0;
@@ -155,16 +154,17 @@ public class Logger extends Module {
             this.forceUpdate = false;
         }
 
-
         //Death
 
         if (this.death.get() && this.deathScript != null) {
             if (mc.player.getHealth() <= 0.0f) {
                 if (!this.deathLogged) {
                     this.deathLogged = true;
-                    String output = StarscriptUtils.run(this.deathScript);
-                    if (this.deathChatOutput.get()) ChatUtils.info(output);
-                    LOG.info(output);
+                    String output = MeteorStarscript.run(this.deathScript);
+                    if (output != null) {
+                        if (this.deathChatOutput.get()) ChatUtils.info(output);
+                        LOG.info(output);
+                    }
                 }
             } else {
                 this.deathLogged = false;
@@ -174,8 +174,9 @@ public class Logger extends Module {
 
     @EventHandler
     private void onDisconnect(GameLeftEvent event) {
-        if (!this.disconnect.get() || !this.isActive() || this.disconnectScript == null) return;
+        if (!this.disconnect.get() || this.disconnectScript == null) return;
 
-        LOG.info(StarscriptUtils.run(this.disconnectScript));
+        String output = MeteorStarscript.run(this.disconnectScript);
+        if (output != null) LOG.info(output);
     }
 }
