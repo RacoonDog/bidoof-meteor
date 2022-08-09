@@ -8,6 +8,7 @@
   "client": [
     "ChatHudMixin",
     "ClientPlayNetworkHandlerMixin",
+    "MusicTrackerMixin",
     "Renderer2DMixin",
     "StringReaderMixin",
     "meteor.BetterChatMixin",

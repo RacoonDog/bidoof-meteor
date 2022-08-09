@@ -35,6 +35,8 @@ public class BidoofMeteor extends MeteorAddon {
         Modules.get().add( new ChatCommands() );
         Modules.get().add( new AutoTpa() );
         Modules.get().add( new ChatEmotes() );
+        Modules.get().add( new PingSpoofer() );
+        Modules.get().add( new Jukebox() );
 
         Commands.get().add( new BidoofCommand() );
 
@@ -44,6 +46,8 @@ public class BidoofMeteor extends MeteorAddon {
 
         DiscordPresence.registerCustomState("com.wildfire.gui.screen", "Changing options");
 
+        //add(new PingSpoofer Module - Artificially modify your ping.());
+        //add(new Jukebox Module - Control vanilla ingame music.());
         //add(new Logger Module - Saves important information on certain events such as death in the logs, configurable via Starscript.());
         //add(new Announcer Module - Re-added the removed Announcer module from Meteor Client.());
         //add(new SpamPlus Module - Spam the bee movie script.());
@@ -57,7 +61,8 @@ public class BidoofMeteor extends MeteorAddon {
         //add(new lookAt Command - Automatically rotate to look at any location in the world.());
         //add(new Player Head Cache - Keep player heads in chat even after the player has left. Part of BetterChat());
         //add(new Anvil Tooltip Info - Anvil-related info, xp cost & anvil uses, of items in the tooltip. Part of BetterTooltips());
-        //add(new Disables DiscordPresence by default.());
+        //add(new Stops DiscordPresence from being enabled by default.());
+        //add(new Adds multiple math functions to Starscript.());
         //add(new Dark Purple Theme.());
 	}
 
