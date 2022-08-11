@@ -15,8 +15,6 @@
     "meteor.BetterTooltipsMixin",
     "meteor.GuiThemeMixin",
     "meteor.MeteorClientMixin",
-    "meteor.MeteorGuiThemeMixin",
-    "meteor.errorreporting.MeteorClientMixin",
-    "meteor.errorreporting.ReflectInitMixin"
+    "meteor.MeteorGuiThemeMixin"
   ]
 }
