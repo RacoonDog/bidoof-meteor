@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.racoondog.bidoofmeteor.commands.arguments.PlayerArgumentType;
 import io.github.racoondog.bidoofmeteor.util.ApiUtils;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.CommandSource;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NameHistoryCommand {
     public static int uuid(CommandContext<CommandSource> context) throws CommandSyntaxException {
         AtomicReference<CommandSyntaxException> ae = new AtomicReference<>();
-        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
+        MeteorExecutor.execute(() -> {
             String uuid = PlayerArgumentType.getUUID(context, "uuid");
             try {
                 nameHistory(uuid, uuid);
@@ -36,7 +37,7 @@ public class NameHistoryCommand {
 
     public static int username(CommandContext<CommandSource> context) throws CommandSyntaxException {
         AtomicReference<CommandSyntaxException> ae = new AtomicReference<>();
-        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
+        MeteorExecutor.execute(() -> {
             String username = PlayerArgumentType.getUsername(context, "username");
             String uuid = ApiUtils.uuidFromName(username);
             try {

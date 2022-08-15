@@ -8,6 +8,7 @@ import io.github.racoondog.bidoofmeteor.impl.PlayerHeadCacheImpl;
 import io.github.racoondog.bidoofmeteor.util.ApiUtils;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.systems.commands.Command;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.CommandSource;
@@ -48,7 +49,7 @@ public class BidoofCommand extends Command {
 
     //todo replace warning with CommandSyntaxException
     private static int getUuid(CommandContext<CommandSource> context) {
-        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
+        MeteorExecutor.execute(() -> {
             String username = PlayerArgumentType.getUsername(context, "username");
             String uuid = ApiUtils.uuidFromName(username);
             if (uuid == null) {

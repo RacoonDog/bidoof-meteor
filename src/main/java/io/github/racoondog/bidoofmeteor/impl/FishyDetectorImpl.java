@@ -3,6 +3,7 @@ package io.github.racoondog.bidoofmeteor.impl;
 import com.mojang.authlib.GameProfile;
 import io.github.racoondog.bidoofmeteor.util.ApiUtils;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.PlayerListEntry;
@@ -19,7 +20,7 @@ public class FishyDetectorImpl {
     private static String previousName;
 
     public static void detectFishy(final List<PlayerListS2CPacket.Entry> list) {
-        ApiUtils.API_EXECUTOR_SERVICE.execute(() -> {
+        MeteorExecutor.execute(() -> {
             List<String> names = new ArrayList<>();
             for (var entry : list) {
                 String name = new PlayerListEntry(entry, mc.getServicesSignatureVerifier(), false).getProfile().getName();

@@ -27,8 +27,6 @@ public final class ApiUtils {
     private static final String UUID_TO_NAME_HISTORY = "https://api.mojang.com/user/profiles/%s/names";
     private static final String UUID_TO_PROFILE_AND_SKIN = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
 
-    public static final ExecutorService API_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
-
     private static <T> @Nullable T getJson(String urlString, Type type) {
         if (mc.isOnThread()) BidoofMeteor.LOG.warn("Sending API requests while on the main thread is stupid and you should feel bad.");
         return Http.get(urlString).sendJson(type);
