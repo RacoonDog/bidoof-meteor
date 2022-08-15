@@ -2,7 +2,7 @@ package io.github.racoondog.bidoofmeteor;
 
 import com.mojang.logging.LogUtils;
 import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
-import io.github.racoondog.bidoofmeteor.hud.ImageHudPresets;
+import io.github.racoondog.bidoofmeteor.hud.ImageHud;
 import io.github.racoondog.bidoofmeteor.modules.*;
 import io.github.racoondog.bidoofmeteor.themes.DarkPurpleTheme;
 import meteordevelopment.meteorclient.addons.GithubRepo;
@@ -40,7 +40,7 @@ public class BidoofMeteor extends MeteorAddon {
 
         Commands.get().add( new BidoofCommand() );
 
-        Hud.get().register(ImageHudPresets.INFO);
+        Hud.get().register( ImageHud.INFO );
 
         GuiThemes.add( new DarkPurpleTheme() );
 

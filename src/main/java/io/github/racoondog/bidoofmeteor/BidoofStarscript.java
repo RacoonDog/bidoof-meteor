@@ -2,9 +2,7 @@ package io.github.racoondog.bidoofmeteor;
 
 import io.github.racoondog.bidoofmeteor.util.Constants;
 import io.github.racoondog.bidoofmeteor.util.ListUtils;
-import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.PreInit;
-import meteordevelopment.starscript.StandardLib;
 import meteordevelopment.starscript.Starscript;
 import meteordevelopment.starscript.value.Value;
 import meteordevelopment.starscript.value.ValueMap;
@@ -13,13 +11,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
-import net.minecraft.util.math.MathConstants;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.RandomSeed;
-
-import java.util.stream.Collectors;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 import static meteordevelopment.meteorclient.utils.misc.MeteorStarscript.ss;

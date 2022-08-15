@@ -1,15 +1,9 @@
 package io.github.racoondog.bidoofmeteor.util;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
-import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.addons.AddonManager;
-import meteordevelopment.meteorclient.mixin.ChatHudAccessor;
 import meteordevelopment.meteorclient.mixininterface.IChatHud;
-import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
