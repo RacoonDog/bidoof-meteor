@@ -11,7 +11,12 @@ import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.CommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Environment(EnvType.CLIENT)
 public class NameHistoryCommand {
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
     public static int uuid(CommandContext<CommandSource> context) throws CommandSyntaxException {
         AtomicReference<CommandSyntaxException> ae = new AtomicReference<>();
         MeteorExecutor.execute(() -> {
@@ -61,9 +68,13 @@ public class NameHistoryCommand {
         list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue())); //Reverse list order
         for (var entry : list) {
             Date dateTime = new Date(entry.getValue());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String date = entry.getValue() == 0 ? "(highlight)Initial Username" : "Changed At (highlight)%s".formatted(dateFormat.format(dateTime));
+            String date = entry.getValue() == 0 ? "(highlight)Initial Username" : "Changed At (highlight)%s".formatted(DATE_FORMAT.format(dateTime));
             ChatUtils.info("(highlight)%s (default): %s", entry.getKey(), date);
+            ChatUtils.sendMsg(Text.literal("View on NameMC").styled(style -> {
+                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://namemc.com/search?q=" + uuid));
+                style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("View on NameMC").formatted(Formatting.YELLOW).formatted(Formatting.ITALIC)));
+                return style;
+            }));
         }
     }
 }

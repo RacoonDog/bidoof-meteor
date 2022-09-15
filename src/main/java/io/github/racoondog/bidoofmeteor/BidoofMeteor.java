@@ -5,6 +5,7 @@ import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
 import io.github.racoondog.bidoofmeteor.hud.ImageHud;
 import io.github.racoondog.bidoofmeteor.modules.*;
 import io.github.racoondog.bidoofmeteor.themes.DarkPurpleTheme;
+import io.github.racoondog.bidoofmeteor.util.AddonUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.gui.GuiThemes;
@@ -28,7 +29,7 @@ public class BidoofMeteor extends MeteorAddon {
 		LOG.info("Initializing Bidoof Meteor");
         INSTANCE = this;
 
-        Modules.get().add( new Logger() );
+        if (!AddonUtils.areAddonsPresent("Meteor Rejects")) Modules.get().add( new Logger() );
         Modules.get().add( new Announcer() );
         Modules.get().add( new FishyDetector() );
         Modules.get().add( new SpamPlus() );
@@ -59,6 +60,7 @@ public class BidoofMeteor extends MeteorAddon {
         //add(new getUuid Command - Get the UUID of any account based on their username.());
         //add(new nameHistory Command - Get the name history of any account both online and offline based on either username or UUID.());
         //add(new lookAt Command - Automatically rotate to look at any location in the world.());
+        //add(new coordinates Command - Copy your coordinates to your clipboard.());
         //add(new Player Head Cache - Keep player heads in chat even after the player has left. Part of BetterChat());
         //add(new Anvil Tooltip Info - Anvil-related info, xp cost & anvil uses, of items in the tooltip. Part of BetterTooltips());
         //add(new Stops DiscordPresence from being enabled by default.());

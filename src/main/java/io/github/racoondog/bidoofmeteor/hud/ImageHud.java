@@ -10,6 +10,8 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import meteordevelopment.meteorclient.utils.render.color.Color;
+import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
@@ -71,6 +73,7 @@ public class ImageHud extends HudElement {
         .defaultValue(2)
         .min(0.1)
         .sliderRange(0.1, 10)
+        .onChanged(o -> updateSize())
         .build()
     );
     private final Setting<Boolean> hFlip = sgCustomization.add(new BoolSetting.Builder()
@@ -86,6 +89,12 @@ public class ImageHud extends HudElement {
         .build()
     );
 
+    private final Setting<SettingColor> colorFilter = sgCustomization.add(new ColorSetting.Builder()
+        .name("color-filter")
+        .defaultValue(new SettingColor(255, 255, 255))
+        .build()
+    );
+
     private static final Identifier ONLINE = new Identifier("bidoof-meteor", "online");
     private Identifier TEXTURE;
     private int width;
@@ -94,6 +103,7 @@ public class ImageHud extends HudElement {
     public ImageHud(HudElementInfo<?> info) {
         super(info);
         this.updateTexture();
+        this.updateSize();
     }
 
     public void updateTexture() {
@@ -110,15 +120,14 @@ public class ImageHud extends HudElement {
                         this.width = img.getWidth();
                         this.height = img.getHeight();
                         mc.getTextureManager().registerTexture(ONLINE, new NativeImageBackedTexture(img));
+                        this.updateSize();
                     } catch (IOException ignored) {}
                 });
             }
         }
     }
 
-    @Override
-    public void updatePos() {
-        super.updatePos();
+    public void updateSize() {
         if (mode.get().equals(Mode.Online)) this.setSize(this.width * scale.get(), this.height * scale.get());
         else this.setSize(64 * scale.get(), 64 * scale.get());
     }
@@ -127,10 +136,10 @@ public class ImageHud extends HudElement {
     public void render(HudRenderer renderer) {
         GL.bindTexture(this.TEXTURE);
         Renderer2D.TEXTURE.begin();
-        if (hFlip.get() && vFlip.get()) ((IRenderer2D)Renderer2D.TEXTURE).texQuadHVFlip(this.x, this.y, this.getWidth(), this.getHeight(), WHITE);
-        else if (hFlip.get()) ((IRenderer2D)Renderer2D.TEXTURE).texQuadHFlip(this.x, this.y, this.getWidth(), this.getHeight(), WHITE);
-        else if (vFlip.get()) ((IRenderer2D)Renderer2D.TEXTURE).texQuadVFlip(this.x, this.y, this.getWidth(), this.getHeight(), WHITE);
-        else Renderer2D.TEXTURE.texQuad(this.x, this.y, this.getWidth(), this.getHeight(), WHITE);
+        if (hFlip.get() && vFlip.get()) ((IRenderer2D)Renderer2D.TEXTURE).texQuadHVFlip(this.x, this.y, this.getWidth(), this.getHeight(), colorFilter.get());
+        else if (hFlip.get()) ((IRenderer2D)Renderer2D.TEXTURE).texQuadHFlip(this.x, this.y, this.getWidth(), this.getHeight(), colorFilter.get());
+        else if (vFlip.get()) ((IRenderer2D)Renderer2D.TEXTURE).texQuadVFlip(this.x, this.y, this.getWidth(), this.getHeight(), colorFilter.get());
+        else Renderer2D.TEXTURE.texQuad(this.x, this.y, this.getWidth(), this.getHeight(), colorFilter.get());
         Renderer2D.TEXTURE.render(null);
     }
 

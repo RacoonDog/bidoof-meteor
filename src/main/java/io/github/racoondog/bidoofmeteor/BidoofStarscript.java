@@ -77,6 +77,9 @@ public class BidoofStarscript {
         return Value.string(sb.toString());
     }
 
+    /**
+     * Fused multiply add (1 * 2 + 3)
+     */
     public static Value fma(Starscript ss, int argCount) {
         if (argCount != 3) ss.error("fma() requres 3 arguments, got %d.", argCount);
         double a = ss.popNumber("Argument 1 of fma() needs to be a number.");

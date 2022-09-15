@@ -21,42 +21,53 @@ public class FishyDetectorImpl {
 
     public static void detectFishy(final List<PlayerListS2CPacket.Entry> list) {
         MeteorExecutor.execute(() -> {
-            List<String> names = new ArrayList<>();
-            for (var entry : list) {
-                String name = new PlayerListEntry(entry, mc.getServicesSignatureVerifier(), false).getProfile().getName();
-                if (name.contains(".")) {
-                    ChatUtils.info("New player detected: (highlight)%s(default), (highlight)%s (default)is not a valid in-use player name", name, name);
-                    continue;
-                }
-                names.add(name);
-            }
-            List<Pair<String, String>> pairList = ApiUtils.uuidsFromNames(names);
-            for (var entry : list) {
-                GameProfile profile = new PlayerListEntry(entry, mc.getServicesSignatureVerifier(), false).getProfile();
-                String username = profile.getName();
-                assert mc.getNetworkHandler() != null;
-                if (username == null || username.equals(previousName) || username.equals(mc.getNetworkHandler().getProfile().getName())) return;
-                previousName = username;
-
-                String apiUuidString = null;
-                for (var pair : pairList) {
-                    if (username.equals(pair.getLeft())) {
-                        apiUuidString = pair.getRight();
-                        break;
-                    }
-                }
-
-                String givenUuidString = profile.getId().toString();
-                String anomalyText = "(highlight)No Anomalies(default).";
-                if (apiUuidString == null) anomalyText = "(highlight)%s (default)is not a valid in-use player name.".formatted(username);
-                else {
-                    givenUuidString = givenUuidString.replace("-", "");
-                    if (!apiUuidString.equals(givenUuidString)) {
-                        anomalyText = "UUID mismatch. Api Expected: (highlight)%s(default), Wrongly Received: (highlight)%s(default).".formatted(apiUuidString, givenUuidString);
-                    }
-                }
-                ChatUtils.info("New player detected: (highlight)%s(default), %s", username, anomalyText);
-            }
+            List<GameProfile> gameProfiles = list.stream().map(entry -> new PlayerListEntry(entry, mc.getServicesSignatureVerifier(), false).getProfile()).toList();
+            detectFishyImpl(gameProfiles);
         });
+    }
+
+    public static void detectFishy() {
+        MeteorExecutor.execute(() -> {
+            assert mc.getNetworkHandler() != null;
+            List<GameProfile> gameProfiles = mc.getNetworkHandler().getPlayerList().stream().map(PlayerListEntry::getProfile).toList();
+            detectFishyImpl(gameProfiles);
+        });
+    }
+
+    private static void detectFishyImpl(List<GameProfile> gameProfiles) {
+        List<Pair<String, String>> pairList = ApiUtils.uuidsFromNames(gameProfiles.stream().map(GameProfile::getName).toList());
+        for (var profile : gameProfiles) {
+            String username = profile.getName();
+
+            if (username.contains(".")) {
+                ChatUtils.info("New player detected: (highlight)%s(default), (highlight)%s (default)is not a valid in-use player name", username, username);
+                continue;
+            }
+
+            assert mc.getNetworkHandler() != null;
+            if (username.equals(previousName) || username.equals(mc.getNetworkHandler().getProfile().getName())) return;
+            previousName = username;
+
+            String apiUuidString = null;
+            apiUuidString.indexOf('3');
+            for (var pair : pairList) {
+                if (username.equals(pair.getLeft())) {
+                    apiUuidString = pair.getRight();
+                    break;
+                }
+            }
+
+            String givenUuidString = profile.getId().toString();
+            String anomalyText = "(highlight)No Anomalies(default).";
+            if (apiUuidString == null)
+                anomalyText = "(highlight)%s (default)is not a valid in-use player name.".formatted(username);
+            else {
+                givenUuidString = givenUuidString.replace("-", "");
+                if (!apiUuidString.equals(givenUuidString)) {
+                    anomalyText = "UUID mismatch. Api Expected: (highlight)%s(default), Wrongly Received: (highlight)%s(default).".formatted(apiUuidString, givenUuidString);
+                }
+            }
+            ChatUtils.info("New player detected: (highlight)%s(default), %s", username, anomalyText);
+        }
     }
 }

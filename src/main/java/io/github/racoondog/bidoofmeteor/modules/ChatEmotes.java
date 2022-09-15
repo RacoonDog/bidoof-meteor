@@ -10,6 +10,8 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
@@ -21,20 +23,6 @@ public class ChatEmotes extends Module {
     private final SettingGroup sgGeneral = this.settings.getDefaultGroup();
 
     private final SettingGroup sgEmoteGroups = this.settings.createGroup("Emote Groups");
-
-    private final Setting<Boolean> outgoing = sgGeneral.add(new BoolSetting.Builder()
-        .name("outgoing")
-        .description("Applies emotes on outgoing chat messages.")
-        .defaultValue(true)
-        .build()
-    );
-
-    private final Setting<Boolean> incoming = sgGeneral.add(new BoolSetting.Builder()
-        .name("incoming")
-        .description("Applies emotes on incoming chat messages.")
-        .defaultValue(false)
-        .build()
-    );
 
     public final Setting<Boolean> variations = sgGeneral.add(new BoolSetting.Builder()
         .name("variations")
@@ -107,23 +95,14 @@ public class ChatEmotes extends Module {
 
     @EventHandler
     private void onMessageSend(SendMessageEvent event) {
-        if (!outgoing.get()) return;
         event.message = emoteReplacer(event.message);
     }
 
-    @EventHandler
-    private void onMessageReceive(ReceiveMessageEvent event) {
-        if (!incoming.get()) return;
-        event.setMessage(Text.literal(emoteReplacer(event.getMessage().getString())));
-    }
-
-
-    public static final List<Pair<String, String>> EMOJI_MAP = new ArrayList<>();
+    private static final List<Pair<String, String>> EMOJI_MAP = new ArrayList<>();
 
     private static void ps(String v, String... ks) {
         for (var k : ks) {
-            k = new StringBuilder().append(":").append(k).append(":").toString();
-            EMOJI_MAP.add(new Pair<>(k, v));
+            p(k, v);
         }
     }
 
