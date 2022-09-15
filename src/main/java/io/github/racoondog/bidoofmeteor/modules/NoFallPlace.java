@@ -86,6 +86,7 @@ public class NoFallPlace extends Module {
 
     private boolean isFalling = false;
     private Boolean breakableCheck = null;
+    private boolean reactivateNoFall = false;
 
     public NoFallPlace() {
         super(BidoofMeteor.CATEGORY, "no-fall-place", "Prevent fall damage by placing blocks.");
@@ -99,6 +100,11 @@ public class NoFallPlace extends Module {
     @SuppressWarnings("ConstantConditions")
     @EventHandler
     private void onTick(TickEvent.Pre event) {
+        if (reactivateNoFall) {
+            Modules.get().get(NoFall.class).toggle();
+            reactivateNoFall = false;
+        }
+
         if (mc.player.fallDistance > 3) {
             List<NoFallItem> possibilities = new ArrayList<>(NoFallItem.LIST);
 
@@ -146,6 +152,8 @@ public class NoFallPlace extends Module {
 
             clutch(chosen, itemResult);
         } else if (isFalling) {
+
+
             //reset
             breakableCheck = null;
             isFalling = false;
@@ -169,8 +177,14 @@ public class NoFallPlace extends Module {
             assert mc.interactionManager != null;
 
             boolean toggleJesus = noFallItem.toggleJesus.get();
+            NoFall noFall = Modules.get().get(NoFall.class);
+            boolean toggleNoFall = toggleNoFallWhenSafe.get() && noFall.isActive();
 
             if (toggleJesus) Modules.get().get(Jesus.class).toggle();
+            if (toggleNoFall) {
+                noFall.toggle();
+                reactivateNoFall = true;
+            }
 
             if (noFallItem.doShift) mc.player.setSneaking(true);
             else if (noFallItem.preventShift) mc.player.setSneaking(false);
@@ -240,7 +254,7 @@ public class NoFallPlace extends Module {
 
     public record NoFallItem(Item item, Supplier<Boolean> canUse, Supplier<Integer> priority,
                              Supplier<Boolean> toggleJesus, boolean isLiquid, BiPredicate<BlockPos, Direction> canPlace,
-                             boolean doShift, boolean preventShift) {
+                             boolean doShift, boolean preventShift, boolean safe) {
         public static final List<NoFallItem> LIST = new ArrayList<>();
 
         @PreInit public static void init() {}
@@ -248,22 +262,22 @@ public class NoFallPlace extends Module {
         private static final NoFallItem WATER_BUCKET = of(Items.WATER_BUCKET).canUse(() -> canUseWater() && !hasFrostWalker() && !hasWaterJesus()).priority(1).toggleJesus(NoFallPlace::hasWaterJesus).liquid().canPlace(((blockPos, direction) -> {
             assert MinecraftClient.getInstance().world != null;
             return !(MinecraftClient.getInstance().world.getBlockState(blockPos.down()).getBlock() instanceof FluidFillable);
-        })).build();
+        })).safe().build();
         private static final NoFallItem LAVA_BUCKET = of(Items.LAVA_BUCKET).canUse(() -> !hasLavaJesus()).priority(NoFallPlace::getLavaPriority).toggleJesus(NoFallPlace::hasLavaJesus).liquid().build();
-        private static final NoFallItem POWDER_SNOW_BUCKET = of(Items.POWDER_SNOW_BUCKET).canUse(() -> !hasPowderSnowJesus() && !hasLeatherBoots()).priority(2).toggleJesus(NoFallPlace::hasPowderSnowJesus).build();
+        private static final NoFallItem POWDER_SNOW_BUCKET = of(Items.POWDER_SNOW_BUCKET).canUse(() -> !hasPowderSnowJesus() && !hasLeatherBoots()).priority(2).toggleJesus(NoFallPlace::hasPowderSnowJesus).safe().build();
         private static final NoFallItem COBWEB = of(Items.COBWEB).priority(1).canPlace(((blockPos, direction) -> {
             //Check for nearby fluids
             return true;
-        })).build();
+        })).safe().build();
         private static final NoFallItem TWISTING_VINE = of(Items.TWISTING_VINES).priority(2).canPlace(((blockPos, direction) -> {
             assert MinecraftClient.getInstance().world != null;
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isOf(Blocks.TWISTING_VINES) || state.isOf(Blocks.TWISTING_VINES_PLANT) || state.isSideSolidFullSquare(MinecraftClient.getInstance().world, blockPos, Direction.UP);
-        })).build();
+        })).safe().build();
         private static final NoFallItem SCAFFOLDING = of(Items.SCAFFOLDING).priority(2).canPlace(((blockPos, direction) -> {
             assert MinecraftClient.getInstance().world != null;
             return ScaffoldingBlock.calculateDistance(MinecraftClient.getInstance().world, blockPos) < 7;
-        })).crouch().build();
+        })).crouch().safe().build();
         private static final NoFallItem WHITE_BED = of(Items.WHITE_BED).priority(5).canPlace(((blockPos, direction) -> {
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
             assert player != null;
@@ -271,14 +285,14 @@ public class NoFallPlace extends Module {
             return player.world.getBlockState(blockPos.offset(direction)).canReplace(new ItemPlacementContext(player, player.getActiveHand(), Items.WHITE_BED.getDefaultStack(), new BlockHitResult(null, Direction.UP, blockPos.offset(direction), false)))
                 && player.world.getBlockState(blockPos.down()).isSideSolidFullSquare(player.world, blockPos.down(), Direction.UP) && player.world.getBlockState(blockPos.down().offset(direction)).isSideSolidFullSquare(player.world, blockPos.down().offset(direction), Direction.UP);
         })).build();
-        private static final NoFallItem SLIME_BLOCK = of(Items.SLIME_BLOCK).priority(2).preventCrouch().build();
+        private static final NoFallItem SLIME_BLOCK = of(Items.SLIME_BLOCK).priority(2).preventCrouch().safe().build();
         private static final NoFallItem HAY_BLOCK = of(Items.HAY_BLOCK).priority(3).build();
         private static final NoFallItem HONEY_BLOCK = of(Items.HONEY_BLOCK).priority(3).build();
         private static final NoFallItem SWEET_BERRY = of(Items.SWEET_BERRIES).priority(3).canPlace(((blockPos, direction) -> {
             assert MinecraftClient.getInstance().world != null;
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isIn(BlockTags.DIRT) || state.isOf(Blocks.FARMLAND);
-        })).crouch().build();
+        })).crouch().safe().build();
 
         private static NoFallItemBuilder of(Item item) {
                 return new NoFallItemBuilder(item);
@@ -293,6 +307,7 @@ public class NoFallPlace extends Module {
             private BiPredicate<BlockPos, Direction> canPlace = (blockPos, direction) -> true;
             private boolean doShift = false;
             private boolean preventShift = false;
+            private boolean safe = false;
 
             private NoFallItemBuilder(Item item) {
                 this.item = item;
@@ -337,8 +352,13 @@ public class NoFallPlace extends Module {
                 return this;
             }
 
+            private NoFallItemBuilder safe() {
+                this.safe = true;
+                return this;
+            }
+
             private NoFallItem build() {
-                NoFallItem out = new NoFallItem(this.item, this.canUse, this.priority, this.toggleJesus, this.isLiquid, this.canPlace, this.doShift, this.preventShift);
+                NoFallItem out = new NoFallItem(this.item, this.canUse, this.priority, this.toggleJesus, this.isLiquid, this.canPlace, this.doShift, this.preventShift, this.safe);
                 LIST.add(out);
                 return out;
             }
