@@ -14,7 +14,9 @@
     "meteor.BetterChatMixin",
     "meteor.BetterTooltipsMixin",
     "meteor.GuiThemeMixin",
+    "meteor.JesusMixin",
     "meteor.MeteorClientMixin",
-    "meteor.MeteorGuiThemeMixin"
+    "meteor.MeteorGuiThemeMixin",
+    "meteor.NoFallMixin"
   ]
 }

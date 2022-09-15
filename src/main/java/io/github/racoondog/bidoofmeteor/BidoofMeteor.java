@@ -38,6 +38,7 @@ public class BidoofMeteor extends MeteorAddon {
         Modules.get().add( new ChatEmotes() );
         Modules.get().add( new PingSpoofer() );
         Modules.get().add( new Jukebox() );
+        Modules.get().add( new NoFallPlace() );
 
         Commands.get().add( new BidoofCommand() );
 
