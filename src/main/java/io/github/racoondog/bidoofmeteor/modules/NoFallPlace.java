@@ -27,8 +27,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.fluid.WaterFluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -42,10 +40,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
 
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
+@SuppressWarnings("ConstantConditions")
 @Environment(EnvType.CLIENT)
 public class NoFallPlace extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -175,7 +173,6 @@ public class NoFallPlace extends Module {
     }
 
     private void breakableCheck(BlockPos center) {
-        assert mc.world != null;
         for (var blockPos : BlockPos.iterateOutwards(center, 5, 1, 5)) {
             if (!mc.world.getBlockState(blockPos).getMaterial().blocksMovement()) {
                 breakableCheck = true;
@@ -191,10 +188,7 @@ public class NoFallPlace extends Module {
     }
 
     private void clutch(NoFallItem noFallItem, FindItemResult findItemResult) {
-        assert mc.player != null;
         Rotations.rotate(mc.player.getYaw(), 90, 10, true, () -> {
-            assert mc.interactionManager != null;
-
             boolean toggleJesus = noFallItem.toggleJesus.getAsBoolean();
             NoFall noFall = Modules.get().get(NoFall.class);
             boolean toggleNoFall = toggleNoFallWhenSafe.get() && noFall.isActive();
@@ -222,7 +216,6 @@ public class NoFallPlace extends Module {
 
     private void use(Hand hand) {
         if (mc.crosshairTarget == null) return;
-        assert mc.interactionManager != null;
         if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) mc.interactionManager.interactBlock(mc.player, hand, (BlockHitResult) mc.crosshairTarget);
         mc.interactionManager.interactItem(mc.player, hand);
     }
@@ -235,12 +228,10 @@ public class NoFallPlace extends Module {
     }
 
     protected static boolean canUseWater() {
-        assert MinecraftClient.getInstance().player != null;
         return !MinecraftClient.getInstance().player.world.getDimension().ultrawarm();
     }
 
     protected static boolean hasFrostWalker() {
-        assert MinecraftClient.getInstance().player != null;
         ItemStack boots = MinecraftClient.getInstance().player.getInventory().getArmorStack(0);
         if (boots.isEmpty() || !boots.hasEnchantments()) return false;
         return EnchantmentHelper.getLevel(Enchantments.FROST_WALKER, boots) >= 1;
@@ -256,7 +247,6 @@ public class NoFallPlace extends Module {
     }
 
     protected static boolean hasLeatherBoots() {
-        assert MinecraftClient.getInstance().player != null;
         return MinecraftClient.getInstance().player.getInventory().getArmorStack(0).isOf(Items.LEATHER_BOOTS);
     }
 
@@ -267,30 +257,21 @@ public class NoFallPlace extends Module {
         public static void init() {
         }
 
-        private static final NoFallItem WATER_BUCKET = of(Items.WATER_BUCKET).canUse(() -> canUseWater() && !hasFrostWalker() && !hasWaterJesus()).priority(1).toggleJesus(NoFallPlace::hasWaterJesus).liquid().canPlace((blockPos -> {
-            assert MinecraftClient.getInstance().world != null;
-            return !(MinecraftClient.getInstance().world.getBlockState(blockPos.down()).getBlock() instanceof FluidFillable);
-        })).safe().build();
+        private static final NoFallItem WATER_BUCKET = of(Items.WATER_BUCKET).canUse(() -> canUseWater() && !hasFrostWalker() && !hasWaterJesus()).priority(1).toggleJesus(NoFallPlace::hasWaterJesus).liquid().canPlace((blockPos -> !(MinecraftClient.getInstance().world.getBlockState(blockPos.down()).getBlock() instanceof FluidFillable))).safe().build();
         private static final NoFallItem POWDER_SNOW_BUCKET = of(Items.POWDER_SNOW_BUCKET).canUse(() -> !hasPowderSnowJesus() && !hasLeatherBoots()).priority(2).toggleJesus(NoFallPlace::hasPowderSnowJesus).safe().build();
         private static final NoFallItem COBWEB = of(Items.COBWEB).priority(1).canPlace((blockPos -> {
-            assert MinecraftClient.getInstance().world != null;
             for (var pos : BlockPos.iterateOutwards(blockPos, 3, 1, 3)) {
                 if (!MinecraftClient.getInstance().world.getFluidState(pos).isEmpty()) return false;
             }
             return true;
         })).safe().build();
         private static final NoFallItem TWISTING_VINE = of(Items.TWISTING_VINES).priority(2).canPlace((blockPos -> {
-            assert MinecraftClient.getInstance().world != null;
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isOf(Blocks.TWISTING_VINES) || state.isOf(Blocks.TWISTING_VINES_PLANT) || state.isSideSolidFullSquare(MinecraftClient.getInstance().world, blockPos, Direction.UP);
         })).safe().build();
-        private static final NoFallItem SCAFFOLDING = of(Items.SCAFFOLDING).priority(2).canPlace((blockPos -> {
-            assert MinecraftClient.getInstance().world != null;
-            return ScaffoldingBlock.calculateDistance(MinecraftClient.getInstance().world, blockPos) < 7;
-        })).crouch().safe().build();
+        private static final NoFallItem SCAFFOLDING = of(Items.SCAFFOLDING).priority(2).canPlace((blockPos -> ScaffoldingBlock.calculateDistance(MinecraftClient.getInstance().world, blockPos) < 7)).crouch().safe().build();
         private static final NoFallItem WHITE_BED = of(Items.WHITE_BED).priority(5).canPlace((blockPos -> {
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
-            assert player != null;
             Direction direction = player.getHorizontalFacing();
             //todo fix checking for replaceable block
             return player.world.getBlockState(blockPos.offset(direction)).canReplace(new ItemPlacementContext(player, player.getActiveHand(), Items.WHITE_BED.getDefaultStack(), new BlockHitResult(null, Direction.UP, blockPos.offset(direction), false)))
@@ -300,7 +281,6 @@ public class NoFallPlace extends Module {
         private static final NoFallItem HAY_BLOCK = of(Items.HAY_BLOCK).priority(3).effectiveness(0.2f).build();
         private static final NoFallItem HONEY_BLOCK = of(Items.HONEY_BLOCK).priority(3).effectiveness(0.2f).build();
         private static final NoFallItem SWEET_BERRY = of(Items.SWEET_BERRIES).priority(3).canPlace((blockPos -> {
-            assert MinecraftClient.getInstance().world != null;
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isIn(BlockTags.DIRT) || state.isOf(Blocks.FARMLAND);
         })).crouch().safe().build();
