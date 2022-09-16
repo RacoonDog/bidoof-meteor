@@ -27,6 +27,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BooleanSupplier;
@@ -83,9 +85,13 @@ public class NoFallPlace extends Module {
         .build()
     );
 
-    private boolean isFalling = false;
+    @Nullable
     private Boolean breakableCheck = null;
     private boolean reactivateNoFall = false;
+    private boolean doRemoveAfter = false;
+    private long ticktime = 0L;
+    @Nullable
+    private List<NoFallItem> possibilities = null;
 
     public NoFallPlace() {
         super(BidoofMeteor.CATEGORY, "no-fall-place", "Prevent fall damage by placing blocks.");
@@ -99,15 +105,12 @@ public class NoFallPlace extends Module {
     @SuppressWarnings("ConstantConditions")
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        if (reactivateNoFall) {
-            Modules.get().get(NoFall.class).toggle();
-            reactivateNoFall = false;
-        }
+        long beginning = System.nanoTime();
 
-        if (mc.player.fallDistance > 3) {
-            List<NoFallItem> possibilities = new ArrayList<>(NoFallItem.LIST);
+        boolean isInWater = mc.player.getBlockStateAtPos().getFluidState().getFluid() == Fluids.WATER;
+        boolean isOnGroud = mc.player.isOnGround();
 
-            isFalling = true;
+        if (mc.player.fallDistance > 3 && !isInWater && !isOnGroud) {
             verifyUseability();
 
             //return if in creative, is above survivable water or has not fallen far enough
@@ -115,8 +118,10 @@ public class NoFallPlace extends Module {
             if (EntityUtils.isAboveWater(mc.player) && !hasWaterJesus() && !hasFrostWalker()) return;
             if (!mode.get().test(mc.player.fallDistance)) return;
 
+            if (possibilities == null) possibilities = new ArrayList<>(NoFallItem.LIST);
+
             //check if about to land
-            BlockHitResult result = mc.world.raycast(new RaycastContext(mc.player.getPos(), mc.player.getPos().subtract(0, 5, 0), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, mc.player));
+            BlockHitResult result = mc.world.raycast(new RaycastContext(mc.player.getPos(), mc.player.getPos().subtract(0, 7, 0), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, mc.player));
 
             if (result == null || result.getType() != HitResult.Type.BLOCK) return;
 
@@ -128,51 +133,58 @@ public class NoFallPlace extends Module {
 
                 if (!entry.canUse.getAsBoolean()) iterator.remove();
                 if (smart.get() && entry.isLiquid) {
-                    if (breakableCheck == null) breakableCheck(result.getBlockPos().up());
+                    if (breakableCheck == null) liquidBreakableBlocksCheck(result.getBlockPos().up());
                     if (breakableCheck) entry.skipped = true;
                 }
             }
 
             possibilities.sort(Comparator.comparingInt(o -> o.priority));
 
-            NoFallItem chosen = null;
-            FindItemResult itemResult = null;
+            boolean found = false;
             for (var entry : possibilities) {
                 if (entry.skipped) continue;
-                if (deathCheck(entry.effectiveness)) continue;
+                if (fallDamageDeathCheck(entry.effectiveness)) continue;
                 if (!entry.canPlace.test(result.getBlockPos().up())) continue;
-                itemResult = InvUtils.findInHotbar(entry.item);
+
+                FindItemResult itemResult = InvUtils.findInHotbar(entry.item);
+
                 if (itemResult.found()) {
-                    chosen = entry;
+                    found = true;
+                    clutch(entry, itemResult);
                     break;
                 }
             }
-            if (chosen == null) {
-                if (smart.get()) {
-                    //No suitable item found, trying again while ignoring smart fluid check
-                    for (var entry : possibilities) {
-                        if (!entry.skipped) continue;
-                        if (!entry.canPlace.test(result.getBlockPos().up())) continue;
-                        itemResult = InvUtils.findInHotbar(entry.item);
-                        if (itemResult.found()) {
-                            chosen = entry;
-                            break;
-                        }
+
+            //No suitable item found, trying again while ignoring smart fluid check
+            if (!found && smart.get()) {
+                for (var entry : possibilities) {
+                    if (!entry.skipped) continue;
+                    if (!entry.canPlace.test(result.getBlockPos().up())) continue;
+
+                    FindItemResult itemResult = InvUtils.findInHotbar(entry.item);
+                    if (itemResult.found()) {
+                        clutch(entry, itemResult);
+                        break;
                     }
-                } else return;
+                }
             }
-
-            clutch(chosen, itemResult);
-        } else if (isFalling) {
-
-
-            //reset
+        } else {
+            if (doRemoveAfter && isInWater) interact(InvUtils.findInHotbar(Items.BUCKET));
+            else if (doRemoveAfter && isOnGroud) Rotations.rotate(mc.player.getYaw(), 90, 10, true, () -> mc.interactionManager.attackBlock(mc.player.getBlockPos().down(), Direction.UP));
+            if (isInWater || isOnGroud) doRemoveAfter = false;
+            
             breakableCheck = null;
-            isFalling = false;
+            possibilities = null;
+
+            if (reactivateNoFall) {
+                Modules.get().get(NoFall.class).toggle();
+                reactivateNoFall = false;
+            }
         }
+        ticktime = System.nanoTime() - beginning;
     }
 
-    private void breakableCheck(BlockPos center) {
+    private void liquidBreakableBlocksCheck(BlockPos center) {
         for (var blockPos : BlockPos.iterateOutwards(center, 5, 1, 5)) {
             if (!mc.world.getBlockState(blockPos).getMaterial().blocksMovement()) {
                 breakableCheck = true;
@@ -182,42 +194,44 @@ public class NoFallPlace extends Module {
         breakableCheck = false;
     }
 
-    private boolean deathCheck(float effectiveness) {
+    private boolean fallDamageDeathCheck(float effectiveness) {
         float height = mc.player.fallDistance * effectiveness;
         return height > Math.max(PlayerUtils.getTotalHealth(), 2);
     }
 
     private void clutch(NoFallItem noFallItem, FindItemResult findItemResult) {
-        Rotations.rotate(mc.player.getYaw(), 90, 10, true, () -> {
-            boolean toggleJesus = noFallItem.toggleJesus.getAsBoolean();
-            NoFall noFall = Modules.get().get(NoFall.class);
-            boolean toggleNoFall = toggleNoFallWhenSafe.get() && noFall.isActive();
+        boolean toggleJesus = noFallItem.toggleJesus.getAsBoolean();
 
-            if (toggleJesus) Modules.get().get(Jesus.class).toggle();
-            if (toggleNoFall) {
-                noFall.toggle();
-                reactivateNoFall = true;
-            }
+        if (toggleJesus) Modules.get().get(Jesus.class).toggle();
+        if (toggleNoFallWhenSafe.get() && Modules.get().isActive(NoFall.class)) {
+            Modules.get().get(NoFall.class).toggle();
+            reactivateNoFall = true;
+        }
 
-            if (noFallItem.doShift) mc.player.setSneaking(true);
-            else if (noFallItem.preventShift) mc.player.setSneaking(false);
+        if (noFallItem.doShift) mc.player.setSneaking(true);
+        else if (noFallItem.preventShift) mc.player.setSneaking(false);
 
-            if (findItemResult.isOffhand()) {
-                use(Hand.OFF_HAND);
-            } else {
-                InvUtils.swap(findItemResult.slot(), true);
-                use(Hand.MAIN_HAND);
-                InvUtils.swapBack();
-            }
+        interact(findItemResult);
 
-            if (toggleJesus) Modules.get().get(Jesus.class).toggle();
-        });
+        if (toggleJesus) Modules.get().get(Jesus.class).toggle();
+
+        if (removeAfter.get()) doRemoveAfter = true;
     }
 
-    private void use(Hand hand) {
-        if (mc.crosshairTarget == null) return;
-        if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) mc.interactionManager.interactBlock(mc.player, hand, (BlockHitResult) mc.crosshairTarget);
-        mc.interactionManager.interactItem(mc.player, hand);
+    private void interact(FindItemResult findItemResult) {
+        if (mc.crosshairTarget == null || !findItemResult.found()) return;
+
+        Rotations.rotate(mc.player.getYaw(), 90, 10, true, () -> {
+            if (findItemResult.isOffhand()) {
+                if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) mc.interactionManager.interactBlock(mc.player, Hand.OFF_HAND, (BlockHitResult) mc.crosshairTarget);
+                else mc.interactionManager.interactItem(mc.player, Hand.OFF_HAND);
+            } else {
+                InvUtils.swap(findItemResult.slot(), true);
+                if (mc.crosshairTarget.getType() == HitResult.Type.BLOCK) mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, (BlockHitResult) mc.crosshairTarget);
+                else mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
+                InvUtils.swapBack();
+            }
+        });
     }
 
     private void verifyUseability() {
@@ -242,12 +256,9 @@ public class NoFallPlace extends Module {
         return jesus.isActive() && ((IJesus) jesus).getWaterMode().equals(Jesus.Mode.Solid);
     }
 
-    protected static boolean hasPowderSnowJesus() {
-        return Modules.get().get(Jesus.class).canWalkOnPowderSnow();
-    }
-
-    protected static boolean hasLeatherBoots() {
-        return MinecraftClient.getInstance().player.getInventory().getArmorStack(0).isOf(Items.LEATHER_BOOTS);
+    @Override
+    public String getInfoString() {
+        return String.valueOf(ticktime);
     }
 
     public static final class NoFallItem {
@@ -258,7 +269,13 @@ public class NoFallPlace extends Module {
         }
 
         private static final NoFallItem WATER_BUCKET = of(Items.WATER_BUCKET).canUse(() -> canUseWater() && !hasFrostWalker() && !hasWaterJesus()).priority(1).toggleJesus(NoFallPlace::hasWaterJesus).liquid().canPlace((blockPos -> !(MinecraftClient.getInstance().world.getBlockState(blockPos.down()).getBlock() instanceof FluidFillable))).safe().build();
-        private static final NoFallItem POWDER_SNOW_BUCKET = of(Items.POWDER_SNOW_BUCKET).canUse(() -> !hasPowderSnowJesus() && !hasLeatherBoots()).priority(2).toggleJesus(NoFallPlace::hasPowderSnowJesus).safe().build();
+        private static final NoFallItem PUFFERFISH_BUCKET = copyOf(WATER_BUCKET, Items.PUFFERFISH_BUCKET).priority(5).build();
+        private static final NoFallItem SALMON_BUCKET = copyOf(WATER_BUCKET, Items.SALMON_BUCKET).priority(4).build();
+        private static final NoFallItem COD_BUCKET = copyOf(WATER_BUCKET, Items.COD_BUCKET).priority(4).build();
+        private static final NoFallItem TROPICAL_FISH_BUCKET = copyOf(WATER_BUCKET, Items.TROPICAL_FISH_BUCKET).priority(4).build();
+        private static final NoFallItem AXOLOTL_BUCKET = copyOf(WATER_BUCKET, Items.AXOLOTL_BUCKET).priority(5).build();
+        private static final NoFallItem TADPOLE_BUCKET = copyOf(WATER_BUCKET, Items.TADPOLE_BUCKET).priority(5).build();
+
         private static final NoFallItem COBWEB = of(Items.COBWEB).priority(1).canPlace((blockPos -> {
             for (var pos : BlockPos.iterateOutwards(blockPos, 3, 1, 3)) {
                 if (!MinecraftClient.getInstance().world.getFluidState(pos).isEmpty()) return false;
@@ -277,6 +294,21 @@ public class NoFallPlace extends Module {
             return player.world.getBlockState(blockPos.offset(direction)).canReplace(new ItemPlacementContext(player, player.getActiveHand(), Items.WHITE_BED.getDefaultStack(), new BlockHitResult(null, Direction.UP, blockPos.offset(direction), false)))
                 && player.world.getBlockState(blockPos.down()).isSideSolidFullSquare(player.world, blockPos.down(), Direction.UP) && player.world.getBlockState(blockPos.down().offset(direction)).isSideSolidFullSquare(player.world, blockPos.down().offset(direction), Direction.UP);
         })).effectiveness(0.5f).build();
+        private static final NoFallItem ORANGE_BED = copyOf(WHITE_BED, Items.ORANGE_BED).build();
+        private static final NoFallItem MAGENTA_BED = copyOf(WHITE_BED, Items.MAGENTA_BED).build();
+        private static final NoFallItem LIGHT_BLUE_BED = copyOf(WHITE_BED, Items.LIGHT_BLUE_BED).build();
+        private static final NoFallItem YELLOW_BED = copyOf(WHITE_BED, Items.YELLOW_BED).build();
+        private static final NoFallItem LIME_BED = copyOf(WHITE_BED, Items.LIME_BED).build();
+        private static final NoFallItem PINK_BED = copyOf(WHITE_BED, Items.PINK_BED).build();
+        private static final NoFallItem GRAY_BED = copyOf(WHITE_BED, Items.GRAY_BED).build();
+        private static final NoFallItem LIGHT_GRAY_BED = copyOf(WHITE_BED, Items.LIGHT_GRAY_BED).build();
+        private static final NoFallItem CYAN_BED = copyOf(WHITE_BED, Items.CYAN_BED).build();
+        private static final NoFallItem PURPLE_BED = copyOf(WHITE_BED, Items.PURPLE_BED).build();
+        private static final NoFallItem BLUE_BED = copyOf(WHITE_BED, Items.BLUE_BED).build();
+        private static final NoFallItem BROWN_BED = copyOf(WHITE_BED, Items.BROWN_BED).build();
+        private static final NoFallItem GREEN_BED = copyOf(WHITE_BED, Items.GREEN_BED).build();
+        private static final NoFallItem RED_BED = copyOf(WHITE_BED, Items.RED_BED).build();
+        private static final NoFallItem BLACK_BED = copyOf(WHITE_BED, Items.BLACK_BED).build();
         private static final NoFallItem SLIME_BLOCK = of(Items.SLIME_BLOCK).priority(2).preventCrouch().safe().build();
         private static final NoFallItem HAY_BLOCK = of(Items.HAY_BLOCK).priority(3).effectiveness(0.2f).build();
         private static final NoFallItem HONEY_BLOCK = of(Items.HONEY_BLOCK).priority(3).effectiveness(0.2f).build();
@@ -284,7 +316,6 @@ public class NoFallPlace extends Module {
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isIn(BlockTags.DIRT) || state.isOf(Blocks.FARMLAND);
         })).crouch().safe().build();
-
 
         public final Item item;
         public final BooleanSupplier canUse;
@@ -315,6 +346,15 @@ public class NoFallPlace extends Module {
 
         private static NoFallItemBuilder of(Item item) {
             return new NoFallItemBuilder(item);
+        }
+
+        private static NoFallItemBuilder copyOf(NoFallItem noFallItem, Item newItem) {
+            NoFallItemBuilder builder = of(newItem).canUse(noFallItem.canUse).priority(noFallItem.priority).toggleJesus(noFallItem.toggleJesus).canPlace(noFallItem.canPlace).effectiveness(noFallItem.effectiveness);
+            if (noFallItem.isLiquid) builder.liquid();
+            if (noFallItem.doShift) builder.crouch();
+            if (noFallItem.preventShift) builder.preventCrouch();
+            if (noFallItem.safe) builder.safe();
+            return builder;
         }
 
         private static class NoFallItemBuilder {
