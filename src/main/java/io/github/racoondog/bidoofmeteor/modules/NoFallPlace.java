@@ -78,9 +78,9 @@ public class NoFallPlace extends Module {
         .build()
     );
 
-    private final Setting<Boolean> removeAfter = sgGeneral.add(new BoolSetting.Builder()
-        .name("remove-after")
-        .description("Remove block after clutching.")
+    private final Setting<Boolean> emergencyNoFall = sgGeneral.add(new BoolSetting.Builder()
+        .name("emergency-nofall")
+        .description("Activate NoFall when no valid clutch blocks found")
         .defaultValue(true)
         .build()
     );
@@ -88,8 +88,6 @@ public class NoFallPlace extends Module {
     @Nullable
     private Boolean breakableCheck = null;
     private boolean reactivateNoFall = false;
-    private boolean doRemoveAfter = false;
-    private long ticktime = 0L;
     @Nullable
     private List<NoFallItem> possibilities = null;
 
@@ -105,12 +103,7 @@ public class NoFallPlace extends Module {
     @SuppressWarnings("ConstantConditions")
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        long beginning = System.nanoTime();
-
-        boolean isInWater = mc.player.getBlockStateAtPos().getFluidState().getFluid() == Fluids.WATER;
-        boolean isOnGroud = mc.player.isOnGround();
-
-        if (mc.player.fallDistance > 3 && !isInWater && !isOnGroud) {
+        if (mc.player.fallDistance > 3 && !mc.player.isOnGround() && mc.player.getBlockStateAtPos().getFluidState().getFluid() != Fluids.WATER) {
             verifyUseability();
 
             //return if in creative, is above survivable water or has not fallen far enough
@@ -140,39 +133,8 @@ public class NoFallPlace extends Module {
 
             possibilities.sort(Comparator.comparingInt(o -> o.priority));
 
-            boolean found = false;
-            for (var entry : possibilities) {
-                if (entry.skipped) continue;
-                if (fallDamageDeathCheck(entry.effectiveness)) continue;
-                if (!entry.canPlace.test(result.getBlockPos().up())) continue;
-
-                FindItemResult itemResult = InvUtils.findInHotbar(entry.item);
-
-                if (itemResult.found()) {
-                    found = true;
-                    clutch(entry, itemResult);
-                    break;
-                }
-            }
-
-            //No suitable item found, trying again while ignoring smart fluid check
-            if (!found && smart.get()) {
-                for (var entry : possibilities) {
-                    if (!entry.skipped) continue;
-                    if (!entry.canPlace.test(result.getBlockPos().up())) continue;
-
-                    FindItemResult itemResult = InvUtils.findInHotbar(entry.item);
-                    if (itemResult.found()) {
-                        clutch(entry, itemResult);
-                        break;
-                    }
-                }
-            }
+            iteratePossibilities(result);
         } else {
-            if (doRemoveAfter && isInWater) interact(InvUtils.findInHotbar(Items.BUCKET));
-            else if (doRemoveAfter && isOnGroud) Rotations.rotate(mc.player.getYaw(), 90, 10, true, () -> mc.interactionManager.attackBlock(mc.player.getBlockPos().down(), Direction.UP));
-            if (isInWater || isOnGroud) doRemoveAfter = false;
-            
             breakableCheck = null;
             possibilities = null;
 
@@ -181,7 +143,37 @@ public class NoFallPlace extends Module {
                 reactivateNoFall = false;
             }
         }
-        ticktime = System.nanoTime() - beginning;
+    }
+
+    private void iteratePossibilities(BlockHitResult result) {
+        for (var entry : possibilities) {
+            if (entry.skipped) continue;
+            if (fallDamageDeathCheck(entry.effectiveness)) continue;
+            if (!entry.canPlace.test(result.getBlockPos().up())) continue;
+
+            FindItemResult itemResult = InvUtils.findInHotbar(entry.item);
+
+            if (itemResult.found()) {
+                clutch(entry, itemResult);
+                return;
+            }
+        }
+
+        //No suitable item found, trying again while ignoring smart fluid check
+        if (smart.get()) {
+            for (var entry : possibilities) {
+                if (!entry.skipped) continue;
+                if (!entry.canPlace.test(result.getBlockPos().up())) continue;
+
+                FindItemResult itemResult = InvUtils.findInHotbar(entry.item);
+                if (itemResult.found()) {
+                    clutch(entry, itemResult);
+                    return;
+                }
+            }
+        }
+
+        if (emergencyNoFall.get() && !Modules.get().isActive(NoFall.class)) Modules.get().get(NoFall.class).toggle();
     }
 
     private void liquidBreakableBlocksCheck(BlockPos center) {
@@ -203,7 +195,7 @@ public class NoFallPlace extends Module {
         boolean toggleJesus = noFallItem.toggleJesus.getAsBoolean();
 
         if (toggleJesus) Modules.get().get(Jesus.class).toggle();
-        if (toggleNoFallWhenSafe.get() && Modules.get().isActive(NoFall.class)) {
+        if (toggleNoFallWhenSafe.get() && Modules.get().isActive(NoFall.class) && noFallItem.effectiveness == 0f) {
             Modules.get().get(NoFall.class).toggle();
             reactivateNoFall = true;
         }
@@ -214,8 +206,6 @@ public class NoFallPlace extends Module {
         interact(findItemResult);
 
         if (toggleJesus) Modules.get().get(Jesus.class).toggle();
-
-        if (removeAfter.get()) doRemoveAfter = true;
     }
 
     private void interact(FindItemResult findItemResult) {
@@ -258,7 +248,7 @@ public class NoFallPlace extends Module {
 
     @Override
     public String getInfoString() {
-        return String.valueOf(ticktime);
+        return possibilities == null ? null : Integer.toString(possibilities.size());
     }
 
     public static final class NoFallItem {
@@ -268,7 +258,7 @@ public class NoFallPlace extends Module {
         public static void init() {
         }
 
-        private static final NoFallItem WATER_BUCKET = of(Items.WATER_BUCKET).canUse(() -> canUseWater() && !hasFrostWalker() && !hasWaterJesus()).priority(1).toggleJesus(NoFallPlace::hasWaterJesus).liquid().canPlace((blockPos -> !(MinecraftClient.getInstance().world.getBlockState(blockPos.down()).getBlock() instanceof FluidFillable))).safe().build();
+        private static final NoFallItem WATER_BUCKET = of(Items.WATER_BUCKET).canUse(() -> canUseWater() && !hasFrostWalker() && !hasWaterJesus()).priority(1).toggleJesus(NoFallPlace::hasWaterJesus).liquid().canPlace((blockPos -> !(MinecraftClient.getInstance().world.getBlockState(blockPos.down()).getBlock() instanceof FluidFillable))).build();
         private static final NoFallItem PUFFERFISH_BUCKET = copyOf(WATER_BUCKET, Items.PUFFERFISH_BUCKET).priority(5).build();
         private static final NoFallItem SALMON_BUCKET = copyOf(WATER_BUCKET, Items.SALMON_BUCKET).priority(4).build();
         private static final NoFallItem COD_BUCKET = copyOf(WATER_BUCKET, Items.COD_BUCKET).priority(4).build();
@@ -281,12 +271,12 @@ public class NoFallPlace extends Module {
                 if (!MinecraftClient.getInstance().world.getFluidState(pos).isEmpty()) return false;
             }
             return true;
-        })).safe().build();
+        })).build();
         private static final NoFallItem TWISTING_VINE = of(Items.TWISTING_VINES).priority(2).canPlace((blockPos -> {
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isOf(Blocks.TWISTING_VINES) || state.isOf(Blocks.TWISTING_VINES_PLANT) || state.isSideSolidFullSquare(MinecraftClient.getInstance().world, blockPos, Direction.UP);
-        })).safe().build();
-        private static final NoFallItem SCAFFOLDING = of(Items.SCAFFOLDING).priority(2).canPlace((blockPos -> ScaffoldingBlock.calculateDistance(MinecraftClient.getInstance().world, blockPos) < 7)).crouch().safe().build();
+        })).build();
+        private static final NoFallItem SCAFFOLDING = of(Items.SCAFFOLDING).priority(2).canPlace((blockPos -> ScaffoldingBlock.calculateDistance(MinecraftClient.getInstance().world, blockPos) < 7)).crouch().build();
         private static final NoFallItem WHITE_BED = of(Items.WHITE_BED).priority(5).canPlace((blockPos -> {
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
             Direction direction = player.getHorizontalFacing();
@@ -309,13 +299,13 @@ public class NoFallPlace extends Module {
         private static final NoFallItem GREEN_BED = copyOf(WHITE_BED, Items.GREEN_BED).build();
         private static final NoFallItem RED_BED = copyOf(WHITE_BED, Items.RED_BED).build();
         private static final NoFallItem BLACK_BED = copyOf(WHITE_BED, Items.BLACK_BED).build();
-        private static final NoFallItem SLIME_BLOCK = of(Items.SLIME_BLOCK).priority(2).preventCrouch().safe().build();
+        private static final NoFallItem SLIME_BLOCK = of(Items.SLIME_BLOCK).priority(2).preventCrouch().build();
         private static final NoFallItem HAY_BLOCK = of(Items.HAY_BLOCK).priority(3).effectiveness(0.2f).build();
         private static final NoFallItem HONEY_BLOCK = of(Items.HONEY_BLOCK).priority(3).effectiveness(0.2f).build();
         private static final NoFallItem SWEET_BERRY = of(Items.SWEET_BERRIES).priority(3).canPlace((blockPos -> {
             BlockState state = MinecraftClient.getInstance().world.getBlockState(blockPos.down());
             return state.isIn(BlockTags.DIRT) || state.isOf(Blocks.FARMLAND);
-        })).crouch().safe().build();
+        })).crouch().build();
 
         public final Item item;
         public final BooleanSupplier canUse;
@@ -325,13 +315,12 @@ public class NoFallPlace extends Module {
         public final Predicate<BlockPos> canPlace;
         public final boolean doShift;
         public final boolean preventShift;
-        public final boolean safe;
         public final float effectiveness;
         public boolean skipped = false;
 
         public NoFallItem(Item item, BooleanSupplier canUse, int priority,
                           BooleanSupplier toggleJesus, boolean isLiquid, Predicate<BlockPos> canPlace,
-                          boolean doShift, boolean preventShift, boolean safe, float effectiveness) {
+                          boolean doShift, boolean preventShift, float effectiveness) {
             this.item = item;
             this.canUse = canUse;
             this.priority = priority;
@@ -340,7 +329,6 @@ public class NoFallPlace extends Module {
             this.canPlace = canPlace;
             this.doShift = doShift;
             this.preventShift = preventShift;
-            this.safe = safe;
             this.effectiveness = effectiveness;
         }
 
@@ -353,7 +341,6 @@ public class NoFallPlace extends Module {
             if (noFallItem.isLiquid) builder.liquid();
             if (noFallItem.doShift) builder.crouch();
             if (noFallItem.preventShift) builder.preventCrouch();
-            if (noFallItem.safe) builder.safe();
             return builder;
         }
 
@@ -366,8 +353,7 @@ public class NoFallPlace extends Module {
             private Predicate<BlockPos> canPlace = blockPos -> true;
             private boolean doShift = false;
             private boolean preventShift = false;
-            private boolean safe = false;
-            private float effectiveness = 0;
+            private float effectiveness = 0f;
 
             private NoFallItemBuilder(Item item) {
                 this.item = item;
@@ -408,18 +394,13 @@ public class NoFallPlace extends Module {
                 return this;
             }
 
-            private NoFallItemBuilder safe() {
-                this.safe = true;
-                return this;
-            }
-
             private NoFallItemBuilder effectiveness(float effectiveness) {
                 this.effectiveness = effectiveness;
                 return this;
             }
 
             private NoFallItem build() {
-                NoFallItem out = new NoFallItem(this.item, this.canUse, this.priority, this.toggleJesus, this.isLiquid, this.canPlace, this.doShift, this.preventShift, this.safe, this.effectiveness);
+                NoFallItem out = new NoFallItem(this.item, this.canUse, this.priority, this.toggleJesus, this.isLiquid, this.canPlace, this.doShift, this.preventShift, this.effectiveness);
                 LIST.add(out);
                 return out;
             }
