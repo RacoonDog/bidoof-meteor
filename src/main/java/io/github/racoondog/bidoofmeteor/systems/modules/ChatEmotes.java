@@ -1,7 +1,6 @@
-package io.github.racoondog.bidoofmeteor.modules;
+package io.github.racoondog.bidoofmeteor.systems.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
-import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent;
 import meteordevelopment.meteorclient.events.game.SendMessageEvent;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.Setting;
@@ -10,9 +9,6 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.modules;
+package io.github.racoondog.bidoofmeteor.systems.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent;

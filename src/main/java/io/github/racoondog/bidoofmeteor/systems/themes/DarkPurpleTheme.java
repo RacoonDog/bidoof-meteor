@@ -1,12 +1,13 @@
-package io.github.racoondog.bidoofmeteor.themes;
+package io.github.racoondog.bidoofmeteor.systems.themes;
 
+import io.github.racoondog.meteorsharedaddonutils.features.RecolorGuiTheme;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class DarkPurpleTheme extends MeteorGuiTheme implements IRecolorGuiTheme {
+public class DarkPurpleTheme extends MeteorGuiTheme implements RecolorGuiTheme {
     @Override
     public String getName() {
         return "DarkPurple";

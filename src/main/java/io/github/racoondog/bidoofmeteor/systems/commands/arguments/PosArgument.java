@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.commands.arguments;
+package io.github.racoondog.bidoofmeteor.systems.commands.arguments;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

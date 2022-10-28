@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.hud;
+package io.github.racoondog.bidoofmeteor.systems.hud;
 
 import io.github.racoondog.bidoofmeteor.mixininterface.IRenderer2D;
 import meteordevelopment.meteorclient.renderer.GL;
@@ -10,7 +10,6 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
-import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,7 +20,6 @@ import net.minecraft.util.Identifier;
 import java.io.IOException;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
-import static meteordevelopment.meteorclient.utils.Utils.WHITE;
 
 @Environment(EnvType.CLIENT)
 public class ImageHud extends HudElement {

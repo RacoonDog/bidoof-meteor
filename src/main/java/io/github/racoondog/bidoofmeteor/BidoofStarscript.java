@@ -1,6 +1,6 @@
 package io.github.racoondog.bidoofmeteor;
 
-import io.github.racoondog.bidoofmeteor.util.Constants;
+import com.google.common.math.BigIntegerMath;
 import io.github.racoondog.bidoofmeteor.util.ListUtils;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.starscript.Starscript;
@@ -37,7 +37,6 @@ public class BidoofStarscript {
             .set("fake_z", () -> Value.number(mc.player != null ? fakeZ + mc.player.getZ() : fakeZ))
         ));
 
-        ss.set("fancy", BidoofStarscript::fancy);
         ss.set("fma", BidoofStarscript::fma);
         ss.set("log", BidoofStarscript::log);
         ss.set("log10", BidoofStarscript::log10);
@@ -51,6 +50,7 @@ public class BidoofStarscript {
         ss.set("wrapDeg", BidoofStarscript::wrapDeg);
         ss.set("getLerp", BidoofStarscript::getLerp);
         ss.set("lerp", BidoofStarscript::lerp);
+        ss.set("factorial", BidoofStarscript::factorial);
 
         ValueMap mods = new ValueMap();
         for (var mod : FabricLoader.getInstance().getAllMods()) {
@@ -65,16 +65,6 @@ public class BidoofStarscript {
             .set("_toString", () -> Value.number(FabricLoader.getInstance().getAllMods().size()))
             .set("list", () -> Value.string(ListUtils.commaSeparatedList(FabricLoader.getInstance().getAllMods(), mod -> mod.getMetadata().getName())))
         );
-    }
-
-    public static Value fancy(Starscript ss, int argCount) {
-        if (argCount != 1) ss.error("fancy() requires 1 argument, got %d.", argCount);
-        String a = ss.popString("Argument to fancy() needs to be a string.");
-        StringBuilder sb = new StringBuilder();
-        for (char ch : a.toCharArray()) {
-            sb.append(Constants.FANCY.getOrDefault(ch, ch));
-        }
-        return Value.string(sb.toString());
     }
 
     /**
@@ -177,6 +167,34 @@ public class BidoofStarscript {
         return Value.number(MathHelper.lerp(a, b, c));
     }
 
+    public static Value factorial(Starscript ss, int argCount) {
+        if (argCount != 1) ss.error("factorial() requires 1 argument, got %d.", argCount);
+        double a = ss.popNumber("Argument to factorial() needs to be a number.");
+        return Value.number(BigIntegerMath.factorial((int) a).doubleValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T[] push(T[] list, T item) {
+        int size = list.length;
+        T[] newList = (T[]) new Object[size + 1];
+        System.arraycopy(list, 0, newList, 0, size);
+        newList[size + 1] = item;
+        return newList;
+    }
+
+    private static Object getArg(Value arg) {
+        if (arg.isString()) return arg.getString();
+        else if (arg.isNumber()) return arg.getNumber();
+        else if (arg.isBool()) return arg.getBool();
+        else return null;
+    }
+
+    private static Value toVal(Object val) {
+        if (val instanceof Number num) return Value.number(num.doubleValue());
+        else if (val instanceof CharSequence cs) return Value.string(cs.toString());
+        else if (val instanceof Boolean bool) return Value.bool(bool);
+        else return Value.null_();
+    }
     private static double genRandom(int min, int max) {
         double value = random.nextDouble() * (max - min) + min;
         if (random.nextBoolean()) value = -value;

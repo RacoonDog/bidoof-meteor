@@ -1,10 +1,9 @@
-package io.github.racoondog.bidoofmeteor.modules;
+package io.github.racoondog.bidoofmeteor.systems.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import io.github.racoondog.bidoofmeteor.impl.FishyDetectorImpl;
 import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.widgets.WWidget;
-import meteordevelopment.meteorclient.gui.widgets.containers.WSection;
 import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.containers.WVerticalList;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WButton;

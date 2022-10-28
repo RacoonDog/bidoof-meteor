@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.modules;
+package io.github.racoondog.bidoofmeteor.systems.modules;
 
 import com.google.common.collect.Lists;
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;

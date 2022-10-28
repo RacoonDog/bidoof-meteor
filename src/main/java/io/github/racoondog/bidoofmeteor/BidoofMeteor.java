@@ -1,11 +1,11 @@
 package io.github.racoondog.bidoofmeteor;
 
 import com.mojang.logging.LogUtils;
-import io.github.racoondog.bidoofmeteor.commands.BidoofCommand;
-import io.github.racoondog.bidoofmeteor.hud.ImageHud;
-import io.github.racoondog.bidoofmeteor.modules.*;
-import io.github.racoondog.bidoofmeteor.themes.DarkPurpleTheme;
-import io.github.racoondog.bidoofmeteor.util.AddonUtils;
+import io.github.racoondog.bidoofmeteor.systems.commands.BidoofCommand;
+import io.github.racoondog.bidoofmeteor.systems.hud.ImageHud;
+import io.github.racoondog.bidoofmeteor.systems.modules.*;
+import io.github.racoondog.bidoofmeteor.systems.themes.DarkPurpleTheme;
+import io.github.racoondog.meteorsharedaddonutils.utils.AddonUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.gui.GuiThemes;
@@ -29,7 +29,7 @@ public class BidoofMeteor extends MeteorAddon {
 		LOG.info("Initializing Bidoof Meteor");
         INSTANCE = this;
 
-        if (!AddonUtils.areAddonsPresent("Meteor Rejects")) Modules.get().add( new Logger() );
+        if (!AddonUtils.areAddonNamesPresent("Meteor Rejects")) Modules.get().add( new Logger() );
         Modules.get().add( new Announcer() );
         Modules.get().add( new FishyDetector() );
         Modules.get().add( new SpamPlus() );

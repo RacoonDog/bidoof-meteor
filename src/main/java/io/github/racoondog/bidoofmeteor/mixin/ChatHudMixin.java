@@ -1,7 +1,7 @@
 package io.github.racoondog.bidoofmeteor.mixin;
 
-import io.github.racoondog.bidoofmeteor.modules.Announcer;
-import io.github.racoondog.bidoofmeteor.modules.SpamPlus;
+import io.github.racoondog.bidoofmeteor.systems.modules.Announcer;
+import io.github.racoondog.bidoofmeteor.systems.modules.SpamPlus;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.Spam;
 import net.fabricmc.api.EnvType;

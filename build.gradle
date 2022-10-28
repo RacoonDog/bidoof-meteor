@@ -14,6 +14,9 @@ repositories {
         name = "meteor-maven-snapshots"
         url = "https://maven.meteordev.org/snapshots"
     }
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {
@@ -23,11 +26,17 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Required for loading hud image preset images
-    modImplementation "net.fabricmc.fabric-api:fabric-resource-loader-v0:+"
-    include "net.fabricmc.fabric-api:fabric-resource-loader-v0:+"
+    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fapi_version)
+    include fabricApi.module("fabric-resource-loader-v0", project.fapi_version)
 
     // Meteor
     modImplementation "meteordevelopment:meteor-client:0.5.1-SNAPSHOT"
+    modImplementation("com.github.RacoonDog:MeteorSharedAddonUtils:main-SNAPSHOT") {
+        transitive = false
+    }
+    include("com.github.RacoonDog:MeteorSharedAddonUtils:main-SNAPSHOT") {
+        transitive = false
+    }
 
     //modImplementation "com.ptsmods:devlogin:2.1"
 }

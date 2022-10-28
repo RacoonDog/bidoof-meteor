@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.hud;
+package io.github.racoondog.bidoofmeteor.systems.hud;
 
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.elements.TextHud;

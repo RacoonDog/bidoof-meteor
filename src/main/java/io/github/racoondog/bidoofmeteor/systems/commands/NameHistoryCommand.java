@@ -1,10 +1,10 @@
-package io.github.racoondog.bidoofmeteor.commands;
+package io.github.racoondog.bidoofmeteor.systems.commands;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.racoondog.bidoofmeteor.commands.arguments.PlayerArgumentType;
+import io.github.racoondog.bidoofmeteor.systems.commands.arguments.PlayerArgumentType;
 import io.github.racoondog.bidoofmeteor.util.ApiUtils;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;

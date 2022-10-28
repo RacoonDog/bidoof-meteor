@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.commands.arguments;
+package io.github.racoondog.bidoofmeteor.systems.commands.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

@@ -3,7 +3,7 @@ package io.github.racoondog.bidoofmeteor.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.racoondog.bidoofmeteor.impl.FishyDetectorImpl;
 import io.github.racoondog.bidoofmeteor.impl.PlayerHeadCacheImpl;
-import io.github.racoondog.bidoofmeteor.modules.FishyDetector;
+import io.github.racoondog.bidoofmeteor.systems.modules.FishyDetector;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

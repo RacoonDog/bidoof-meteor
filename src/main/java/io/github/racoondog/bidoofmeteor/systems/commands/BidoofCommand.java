@@ -1,11 +1,11 @@
-package io.github.racoondog.bidoofmeteor.commands;
+package io.github.racoondog.bidoofmeteor.systems.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.racoondog.bidoofmeteor.commands.arguments.PlayerArgumentType;
-import io.github.racoondog.bidoofmeteor.commands.arguments.Vec3ArgumentType;
 import io.github.racoondog.bidoofmeteor.impl.PlayerHeadCacheImpl;
+import io.github.racoondog.bidoofmeteor.systems.commands.arguments.PlayerArgumentType;
+import io.github.racoondog.bidoofmeteor.systems.commands.arguments.Vec3ArgumentType;
 import io.github.racoondog.bidoofmeteor.util.ApiUtils;
 import io.github.racoondog.bidoofmeteor.util.ChatUtils;
 import meteordevelopment.meteorclient.systems.commands.Command;
@@ -33,9 +33,9 @@ public class BidoofCommand extends Command {
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(literal("flushCache").executes(BidoofCommand::clearCache))
             .then(literal("getUuid").then(argument("username", PlayerArgumentType.username()).executes(BidoofCommand::getUuid)))
-            .then(literal("nameHistory")
-                .then(literal("username").then(argument("username", PlayerArgumentType.username()).executes(NameHistoryCommand::username)))
-                .then(literal("uuid").then(argument("uuid", PlayerArgumentType.uuid()).executes(NameHistoryCommand::uuid))))
+            //.then(literal("nameHistory")
+            //    .then(literal("username").then(argument("username", PlayerArgumentType.username()).executes(NameHistoryCommand::username)))
+            //    .then(literal("uuid").then(argument("uuid", PlayerArgumentType.uuid()).executes(NameHistoryCommand::uuid))))
             .then(literal("lookAt").then(argument("location", Vec3ArgumentType.vec3()).executes(BidoofCommand::lookAt)))
             .then(literal("copyCoords").executes(BidoofCommand::copyCoords))
             .then(literal("crash")

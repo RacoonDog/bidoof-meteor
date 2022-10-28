@@ -1,6 +1,6 @@
 package io.github.racoondog.bidoofmeteor.mixin;
 
-import io.github.racoondog.bidoofmeteor.modules.Jukebox;
+import io.github.racoondog.bidoofmeteor.systems.modules.Jukebox;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.MusicTracker;

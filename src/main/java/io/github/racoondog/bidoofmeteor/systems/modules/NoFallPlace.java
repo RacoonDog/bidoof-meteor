@@ -1,4 +1,4 @@
-package io.github.racoondog.bidoofmeteor.modules;
+package io.github.racoondog.bidoofmeteor.systems.modules;
 
 import io.github.racoondog.bidoofmeteor.BidoofMeteor;
 import io.github.racoondog.bidoofmeteor.mixininterface.IJesus;
@@ -22,7 +22,10 @@ import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.orbit.EventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidFillable;
+import net.minecraft.block.ScaffoldingBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -41,7 +44,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
